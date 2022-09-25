@@ -33,18 +33,18 @@ class PD_Tagged_Agents:
         index2 = -1
         for i in range(self.num_agents):
             if self.agents[i].run == False:
-                index1 = i
-                break
+                for j in range(i+1, self.num_agents):
+                    if self.agents[j].run == False and self.agents[j].tag == self.agents[i].tag:
+                        index1 = i
+                        index2 = j
+                        break
+                if index1 == -1:
+                    index1 = i
         if index1 == -1:
             self.evolve()
             self.reset_agents()
             return self.select_agents()
 
-        for i in range(index1+1, self.num_agents):
-            if self.agents[i].run == False and self.agents[i].tag == self.agents[index1].tag:
-                index2 = i
-                break
-        
         if index2 == -1:
             for i in range(index1+1, self.num_agents):
                 if self.agents[i].run == False:

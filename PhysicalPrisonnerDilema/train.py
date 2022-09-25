@@ -11,7 +11,7 @@ import time
 
 # Instantiate Robotarium object
 N = 2
-iterations = 400 #Run the simulation/experiment for 1000 steps (1000*0.033 ~= 33sec)
+iterations = 500 #Run the simulation/experiment for 1000 steps (1000*0.033 ~= 33sec)
 goal_points = np.array([[.5, -.5], [.2,-.2], [0,0]])
 
 # Create single integrator position controller
@@ -24,7 +24,7 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-agents = PD_Tagged_Agents(num_agents=6)
+agents = PD_Tagged_Agents(num_agents=20)
 show_figure = False
 
 trainingSteps = 500
@@ -57,7 +57,7 @@ for step in range(trainingSteps):
     # Plotting Parameters
     CM = np.random.rand(N,3) # Random Colors
 
-    goal_marker_size_m = 0.15
+    goal_marker_size_m = 0.2
     boundaries = []
     for i in range(3):
         boundary = []
@@ -69,7 +69,7 @@ for step in range(trainingSteps):
     scores = [0] * N #The score for each agent
 
     if show_figure:
-        robot_marker_size_m = 0.15
+        robot_marker_size_m = 0.2
         marker_size_goal = determine_marker_size(r,goal_marker_size_m)
         marker_size_robot = determine_marker_size(r, robot_marker_size_m)
         font_size = determine_font_size(r,0.1)
