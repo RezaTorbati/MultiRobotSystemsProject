@@ -1,3 +1,4 @@
+#This code was heavily inspired by the Robotarium's si_go_to_point_with_plotting.py example code
 import rps.robotarium as robotarium
 from rps.utilities.transformations import *
 from rps.utilities.barrier_certificates import *
