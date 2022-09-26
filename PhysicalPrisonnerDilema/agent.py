@@ -1,4 +1,7 @@
+from cProfile import label
 import random
+import numpy as np
+import matplotlib.pyplot as plt
 
 class PD_Tagged_Agent:
     def __init__(self, tag, number, collaborate=False):
@@ -109,7 +112,19 @@ class PD_Tagged_Agents:
 
 class Single_Iteration_Stats:
     def __init__(self, agents):
-        pass
+        self.stats = {}
+        self.stats['collaborating'] = 0
+        self.stats['selfish'] = 0
+        self.stats['tags'] = [0] * len(agents) #Assumes number of tags == number of agents
+        for a in agents:
+            if a.collaborate:
+                self.stats['collaborating']+=1
+            else:
+                self.stats['selfish'] += 1
+            self.stats['tags'][a.tag]+=1
+
+    def __str__(self):
+        return str(self.stats)
 
 class Agent_Stats:
     def __init__(self):
@@ -118,6 +133,26 @@ class Agent_Stats:
     def update(self, agents):
         self.iterations.append(Single_Iteration_Stats(agents))
 
+    def pltCollaborating(self):
+        collab = []
+        selfish = []
+        evolutions = []
+        for i in range(len(self.iterations)):
+            collab.append(self.iterations[i].stats['collaborating'])
+            selfish.append(self.iterations[i].stats['selfish'])
+            evolutions.append((i+1)*10)
+        print(collab)
+        print(selfish)
+        plt.plot(evolutions, collab, label='Collaborating Agents')
+        plt.plot(evolutions, selfish, label = 'Selfish Agents')
+        plt.xlabel("Evolutions")
+        plt.ylabel("Agents")
+        plt.legend()
+        plt.show()
+
     def __str__(self):
-        return ''
+        string = ''
+        for i in self.iterations:
+            string += str(i.stats)+'\n'
+        return string
 

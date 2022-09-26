@@ -12,7 +12,7 @@ import time
 
 # Instantiate Robotarium object
 N = 2
-iterations = 500 #Run the simulation/experiment for 1000 steps (1000*0.033 ~= 33sec)
+iterations = 450 #Run the simulation/experiment for 1000 steps (1000*0.033 ~= 33sec)
 goal_points = np.array([[.5, -.5], [.2,-.2], [0,0]])
 
 # Create single integrator position controller
@@ -25,10 +25,10 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-agents = PD_Tagged_Agents(num_agents=20)
+agents = PD_Tagged_Agents(num_agents=100)
 show_figure = False
 
-trainingSteps = 500
+trainingSteps = 2000
 for step in range(trainingSteps):
     scores = [0,0]
     print(step)
@@ -133,6 +133,7 @@ for step in range(trainingSteps):
     for p in range(len(playingAgents)):
         playingAgents[p].score = scores[p]
     print(scores)
+agents.stats.pltCollaborating()
 
 #Call at end of script to print debug information and for your script to run on the Robotarium server properly
 r.call_at_scripts_end()
