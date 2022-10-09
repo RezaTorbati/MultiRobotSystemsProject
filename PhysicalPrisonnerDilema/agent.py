@@ -4,20 +4,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class PD_Tagged_Agent:
-    def __init__(self, tag, number, collaborate=False):
+    def __init__(self, tag, number, collaborate=False, useTag = True):
         self.collaborate = collaborate #Whether or not the agent will go to its own goal or the other goal
         self.tag = tag #The agent's tag number
         self.number = number #Does not change, used purely for debugging
         self.run = False #If the agent has already run in an iteration or not
         self.score = 0 #The agents score
-        
+        self.useTag = useTag
      
     def __str__(self):
         return (f"Agent {self.number}:\tTag: {self.tag}, Cooperating: {self.collaborate}")
 
 
 class PD_Tagged_Agents:
-    def __init__(self, num_agents = 50):
+    def __init__(self, num_agents = 50, useTags = True):
+        self.useTags = useTags
         if num_agents % 2 == 1:
             print(f'Expects even number of agents. Using {num_agents+1} agents')
             self.num_agents = num_agents + 1
@@ -25,7 +26,10 @@ class PD_Tagged_Agents:
             self.num_agents = num_agents
         self.agents = []
         for i in range(self.num_agents):
-            self.agents.append(PD_Tagged_Agent(i,i))
+            if self.useTags:
+                self.agents.append(PD_Tagged_Agent(i,i))
+            else:
+                self.agents.append(PD_Tagged_Agent(-1,i))
         self.stats = Agent_Stats()
         
     def reset_agents(self):
@@ -107,7 +111,7 @@ class PD_Tagged_Agents:
             
             #Mutation 2 changes the agent's tag
             mutation2 = random.random()
-            if mutation2 < mutation2Chance:
+            if mutation2 < mutation2Chance and self.useTags:
                 a.tag = round(random.uniform(0,self.num_agents-1))
 
 class Single_Iteration_Stats:

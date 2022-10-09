@@ -25,10 +25,10 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-agents = PD_Tagged_Agents(num_agents=100)
-show_figure = False
+agents = PD_Tagged_Agents(num_agents=10)
+show_figure = True
 
-trainingSteps = 2000
+trainingSteps = 16001
 for step in range(trainingSteps):
     scores = [0,0]
     print(step)
@@ -36,8 +36,12 @@ for step in range(trainingSteps):
     for p in playingAgents:
         print(p)
     goals = []
+
+    #Goes through the x y and z goal point
     for i in range(3):
         goal = []
+
+        #For each robot
         for j in range(N):
             if playingAgents[j].collaborate == True:
                 if j == N-1:
@@ -64,7 +68,7 @@ for step in range(trainingSteps):
         boundary = []
         for j in range(N):
             #boundary.append([[goal_points[0][i] - goal_marker_size_m, goal_points[0][i] + goal_marker_size_m], [goal_points[1][i] - goal_marker_size_m, goal_points[1][i] + goal_marker_size_m]])
-            boundary.append([goal_points[i][j] - goal_marker_size_m,goal_points[i][j] + goal_marker_size_m])
+            boundary.append([goal_points[i][j] - goal_marker_size_m, goal_points[i][j] + goal_marker_size_m])
         boundaries.append(boundary)
 
     scores = [0] * N #The score for each agent
