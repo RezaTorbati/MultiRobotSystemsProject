@@ -12,8 +12,8 @@ import numpy as np
 import time
 
 # Instantiate Robotarium object
-N = 10
-G = 5
+N = 16
+G = 4
 iterations = 1500 #Run the simulation/experiment for 1000 steps (1000*0.033 ~= 33sec)
 goal_points = generate_initial_conditions(G)
 print(goal_points)
