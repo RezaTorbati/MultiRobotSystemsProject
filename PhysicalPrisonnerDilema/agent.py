@@ -75,7 +75,7 @@ class PD_Tagged_Agents:
         self.agents[index2].run = True
         return self.agents[index1], self.agents[index2]
 
-    def evolve(self, mutation1Chance = .1, mutation2Chance = .1):
+    def evolve(self, mutation1Chance = .05, mutation2Chance = .1):
         '''
         Updates the stats of the agents and then evolves them
         Evolution evolves agents proportionally to their score with a small chance of a mutation
@@ -112,14 +112,14 @@ class PD_Tagged_Agents:
             #Mutation 2 changes the agent's tag
             mutation2 = random.random()
             if mutation2 < mutation2Chance and self.useTags:
-                a.tag = round(random.uniform(0,self.num_agents-1))
+                a.tag = round(random.uniform(0,self.num_agents*10-1))
 
 class Single_Iteration_Stats:
     def __init__(self, agents):
         self.stats = {}
         self.stats['collaborating'] = 0
         self.stats['selfish'] = 0
-        self.stats['tags'] = [0] * len(agents) #Assumes number of tags == number of agents
+        self.stats['tags'] = [0] * len(agents)*10 #Assumes number of tags == number of agents
         for a in agents:
             if a.collaborate:
                 self.stats['collaborating']+=1
@@ -144,7 +144,7 @@ class Agent_Stats:
         for i in range(len(self.iterations)):
             collab.append(self.iterations[i].stats['collaborating'])
             selfish.append(self.iterations[i].stats['selfish'])
-            evolutions.append((i+1)*10)
+            evolutions.append(i+1)
         print(collab)
         print(selfish)
         plt.plot(evolutions, collab, label='Collaborating Agents')
@@ -152,7 +152,7 @@ class Agent_Stats:
         plt.xlabel("Evolutions")
         plt.ylabel("Agents")
         plt.legend()
-        plt.show()
+        plt.savefig('PD.png')
 
     def __str__(self):
         string = ''

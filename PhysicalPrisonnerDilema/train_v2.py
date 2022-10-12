@@ -12,7 +12,7 @@ import time
 
 # Instantiate Robotarium object
 N = 2
-iterations = 450 #Run the simulation/experiment for 1000 steps (1000*0.033 ~= 33sec)
+iterations = 350 #Run the simulation/experiment for 1000 steps (1000*0.033 ~= 33sec)
 goal_points = np.array([[.5, -.5], [.2,-.2], [0,0]])
 
 # Create single integrator position controller
@@ -25,10 +25,10 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-agents = PD_Tagged_Agents(num_agents=100, useTags = False)
-show_figure = True
+agents = PD_Tagged_Agents(num_agents=400, useTags = True)
+show_figure = False
 
-trainingSteps = 2000
+trainingSteps = 4500001
 for step in range(trainingSteps):
     scores = [0,0]
     print(step)
