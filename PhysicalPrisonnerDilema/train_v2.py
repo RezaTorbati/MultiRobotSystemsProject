@@ -25,10 +25,11 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-agents = PD_Tagged_Agents(num_agents=50, useTags = True)
+agents = PD_Tagged_Agents(num_agents=400, useTags = True)
 show_figure = False
 
-trainingSteps = 1000#4500001
+trainingSteps = 4001#4500001
+startTime = time.time()
 for step in range(trainingSteps):
     scores = [0,0]
     print(step)
@@ -134,6 +135,7 @@ for step in range(trainingSteps):
     for p in range(len(playingAgents)):
         playingAgents[p].score = scores[p]
     print(scores)
+print('total time: ', (startTime - time.time()))
 agents.stats.pltCollaborating()
 
 #Call at end of script to print debug information and for your script to run on the Robotarium server properly

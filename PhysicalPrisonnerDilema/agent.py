@@ -152,7 +152,7 @@ class Agent_Stats:
         plt.xlabel("Evolutions")
         plt.ylabel("Agents")
         plt.legend()
-        plt.savefig('PD.png')
+        plt.show()
 
     def __str__(self):
         string = ''
