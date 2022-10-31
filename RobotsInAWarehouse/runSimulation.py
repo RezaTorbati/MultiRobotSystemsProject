@@ -14,11 +14,7 @@ import time
 # Instantiate Robotarium object
 N = 16
 G = 4
-iterations = 1500 #Run the simulation/experiment for 1000 steps (1000*0.033 ~= 33sec)
-goal_points = generate_initial_conditions(G)
-print(goal_points)
-# goal_points = np.array([[0, *goal_points[0][1:]], [0, *goal_points[1][1:]], goal_points[2].tolist()])
-# print(goal_points)
+iterations = 667 #Run the simulation/experiment for 1000 steps (1000*0.033 ~= 33sec)
 
 thetas = []
 for i in range(G):
@@ -28,11 +24,11 @@ goal_point_z = [0] * G
 goal_point_x = []
 goal_point_y = []
 
+#Sets the goal points to 80% of the edge of the circle
 for i in thetas:
     goal_point_x.append(1 * 0.8 * np.cos(i-(np.pi /G)))
     goal_point_y.append(1 * 0.8 * np.sin(i-(np.pi /G)))
 goal_points = np.array([goal_point_x, goal_point_y, goal_point_z])
-print(goal_points)
 
 # Create single integrator position controller
 single_integrator_position_controller = create_si_position_controller()
@@ -44,10 +40,8 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-# agents = Warehouse_Agents(num_agents=N, useTags = True)
+agents = Warehouse_Agents(num_agents=N, useTags = True)
 show_figure = True
-
-# playingAgents = agents.select_agents()
 
 initial_conditions = generate_initial_conditions(N)
 r = robotarium.Robotarium(number_of_robots=N, show_figure=show_figure, initial_conditions=initial_conditions, sim_in_real_time=False)
@@ -60,15 +54,7 @@ x_si = uni_to_si_states(x)
 CM = plt.cm.get_cmap('hsv', G+1) # Agent/goal color scheme
 
 goal_marker_size_m = 2
-boundaries = []
-for i in range(3):
-    boundary = []
-    for j in range(G):
-        #boundary.append([[goal_points[0][i] - goal_marker_size_m, goal_points[0][i] + goal_marker_size_m], [goal_points[1][i] - goal_marker_size_m, goal_points[1][i] + goal_marker_size_m]])
-        boundary.append([goal_points[i][j] - goal_marker_size_m, goal_points[i][j] + goal_marker_size_m])
-    boundaries.append(boundary)
-
-scores = np.zeros(N) #The score for each agent
+scores = np.zeros(N) #The score for each group of agents
 
 if show_figure:
     pie_slice = [1.0 / G] * G
@@ -78,7 +64,7 @@ if show_figure:
 
     robot_marker_size_m = 0.2
     marker_size_goal = determine_marker_size(r,goal_marker_size_m)
-    print(marker_size_goal)
+
     marker_size_robot = determine_marker_size(r, robot_marker_size_m)
     font_size = determine_font_size(r,0.1)
     line_width = 5
@@ -89,14 +75,7 @@ if show_figure:
 
     #Plot text for caption
     goal_points_text = [r.axes.text(goal_points[0,ii], goal_points[1,ii]-robot_marker_size_m-.05, goal_caption[ii], fontsize=font_size, color='k',fontweight='bold',horizontalalignment='center',verticalalignment='center',zorder=-2)
-    for ii in range(goal_points.shape[1])]
-
-    # print(goal_points)
-    # goal_markers = [matplotlib.pyplot.Circle((goal_points[0,ii], goal_points[1,ii]), radius=1, facecolor='none', edgecolor=CM(ii), linewidth=line_width)
-    # for ii in range(goal_points.shape[1])]
-    # for g in goal_markers:
-    #     r.axes.add_patch(g)
-    
+    for ii in range(goal_points.shape[1])]    
 
     robot_markers = [r.axes.scatter(x[0,ii], x[1,ii], s=marker_size_robot, marker='o', facecolors='none',edgecolors=CM(ii%G),linewidth=line_width) 
     for ii in range(N)]
@@ -164,8 +143,7 @@ for t in range(iterations):
     # Iterate the simulation
     r.step()
     # time.sleep(2)
-# for p in range(len(playingAgents)):
-#     playingAgents[p].score = scores[p]
+
 print(scores)
 # agents.stats.pltCollaborating()
 

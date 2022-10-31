@@ -1,13 +1,13 @@
-from cProfile import label
 import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-class Robot_Agent:
-    def __init__(self, tag, number, collaborate=False, useTag = True):
-        self.collaborate = collaborate #Whether or not the agent will go to its own goal or the other goal
+class Warehouse_Agent:
+    def __init__(self, tag, number, N=False, L=False, useTag = True):
         self.tag = tag #The agent's tag number
         self.number = number #Does not change, used purely for debugging
+        self.N = N #Agent will accept request for help if its own bay doesn't need unloaded
+        self.L = L #Agent will accept request for help if its own bay needs unloaded
         self.run = False #If the agent has already run in an iteration or not
         self.score = 0 #The agents score
         self.useTag = useTag
@@ -17,20 +17,21 @@ class Robot_Agent:
 
 
 class Warehouse_Agents:
-    def __init__(self, num_agents = 50, useTags = True):
+    def __init__(self, num_agents = 16, useTags = True, tags = -1):
         self.useTags = useTags
-        if num_agents % 2 == 1:
-            print(f'Expects even number of agents. Using {num_agents+1} agents')
-            self.num_agents = num_agents + 1
-        else:
-            self.num_agents = num_agents
+
+        self.num_agents = num_agents
         self.agents = []
         for i in range(self.num_agents):
             if self.useTags:
-                self.agents.append(PD_Tagged_Agent(i,i))
+                self.agents.append(Warehouse_Agent(i,i))
             else:
-                self.agents.append(PD_Tagged_Agent(-1,i))
-        self.stats = Agent_Stats()
+                self.agents.append(Warehouse_Agent(-1,i))
+        if tags == -1:
+            self.tags = len(self.agents)
+        else:
+            self.tags = tags
+        self.stats = Agent_Stats(self.tags)
         
     def reset_agents(self):
         '''resets the agent's scores and sets their run status to false'''
@@ -112,14 +113,14 @@ class Warehouse_Agents:
             #Mutation 2 changes the agent's tag
             mutation2 = random.random()
             if mutation2 < mutation2Chance and self.useTags:
-                a.tag = round(random.uniform(0,self.num_agents-1))
+                a.tag = round(random.uniform(0,self.tags))
 
 class Single_Iteration_Stats:
-    def __init__(self, agents):
+    def __init__(self, agents, tags):
         self.stats = {}
         self.stats['collaborating'] = 0
         self.stats['selfish'] = 0
-        self.stats['tags'] = [0] * len(agents) #Assumes number of tags == number of agents
+        self.stats['tags'] = [0] * tags #Assumes number of tags == number of agents
         for a in agents:
             if a.collaborate:
                 self.stats['collaborating']+=1
@@ -131,11 +132,12 @@ class Single_Iteration_Stats:
         return str(self.stats)
 
 class Agent_Stats:
-    def __init__(self):
+    def __init__(self, tags):
         self.iterations = []
+        self.tags = tags
 
     def update(self, agents):
-        self.iterations.append(Single_Iteration_Stats(agents))
+        self.iterations.append(Single_Iteration_Stats(agents, self.tags))
 
     def pltCollaborating(self):
         collab = []

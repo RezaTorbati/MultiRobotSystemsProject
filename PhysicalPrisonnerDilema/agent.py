@@ -112,14 +112,14 @@ class PD_Tagged_Agents:
             #Mutation 2 changes the agent's tag
             mutation2 = random.random()
             if mutation2 < mutation2Chance and self.useTags:
-                a.tag = round(random.uniform(0,self.num_agents*10-1))
+                a.tag = round(random.uniform(0,self.num_agents*2-1))
 
 class Single_Iteration_Stats:
     def __init__(self, agents):
         self.stats = {}
         self.stats['collaborating'] = 0
         self.stats['selfish'] = 0
-        self.stats['tags'] = [0] * len(agents)*10 #Assumes number of tags == number of agents
+        self.stats['tags'] = [0] * len(agents)*2 #Assumes number of tags == number of agents
         for a in agents:
             if a.collaborate:
                 self.stats['collaborating']+=1
