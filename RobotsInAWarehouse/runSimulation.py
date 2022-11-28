@@ -12,17 +12,24 @@ import numpy as np
 import random
 
 # Instantiate Robotarium object
+
+#TODO: Run simulations where
+#evolve is True and useTags is True, evolve is True and useTags is false
+#evolve is False and N is True and L is False
+#evolve is False and N and L are both False
+#Repeat for p = .25 and s=100, p=.05 s=400, p=.01 s=1000
+
 N = 16 #Number of agents
 G = 4 #Number of goals
-p = .1 #How likely a zone will be reloaded every update iteration
-s = 200 #How much a zone will be reloaded by every time one gets reloaded
+p = .05 #How likely a zone will be reloaded every update iteration
+s = 400 #How much a zone will be reloaded by every time one gets reloaded
 
-expType = 'expResults/default' #set to '' if don't want to save results
+expType = 'expResults/default_s100p25' #set to '' if don't want to save results
 evolve = True
 evolveFrequency = 5 #Evolves once per this many updates
 updateFrequency = 100 #How many iterations per update
-iterations = 500 * updateFrequency * evolveFrequency #Number of steps to run the simulation (each takes ~.033 seconds)
-agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
+iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
+agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=False, L=False)
 
 thetas = []
 for i in range(G):
@@ -48,7 +55,7 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-show_figure = False
+show_figure = True
 
 initial_conditions = generate_initial_conditions(N)
 r = robotarium.Robotarium(number_of_robots=N, show_figure=show_figure, initial_conditions=initial_conditions, sim_in_real_time=False)
@@ -109,14 +116,14 @@ for t in range(iterations):
                 agents.agents[i].needHelp = True
 
         #Request for help
-        random.shuffle(agents.agents)
+        #random.shuffle(agents.agents)
         for a in agents.agents:
             if a.needHelp:
                 agents.request_help(a)
         
-        #for a in agents.agents:
-        #    print(a)
-        #print()
+        for a in agents.agents:
+            print(a)
+        print()
 
         #Gets the goal locations for each agent
         goals = []
@@ -144,9 +151,9 @@ for t in range(iterations):
                             loads[k] -= 1
                         break
 
-        if t % updateFrequency*evolveFrequency == 0 and evolve:
+        if t % (updateFrequency*evolveFrequency) == 0 and evolve:
             agents.evolve()
-        elif t % updateFrequency*evolveFrequency == 0:
+        elif t % (updateFrequency*evolveFrequency) == 0:
             agents.stats.update(agents.agents)
             print(agents.stats)
             print()
