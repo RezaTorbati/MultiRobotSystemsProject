@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Warehouse_Agent:
-    def __init__(self, tag, number, N=False, L=False):
+    def __init__(self, tag, number, N=True, L=True):
         self.tag = tag #The agent's tag number
         self.number = number #Does not change, agent's ID
         self.N = N #Agent will accept request for help if its own bay doesn't need unloaded
@@ -15,7 +15,7 @@ class Warehouse_Agent:
         self.needHelp = False #This is True is the agent's bay is not empty
      
     def __str__(self):
-        return (f"Agent {self.number}:\tTag: {self.tag}, N: {self.N}, L: {self.L}")
+        return (f"Agent {self.number}:\tTag: {self.tag}, Agent Goal Zone: {self.goalZone}, N: {self.N}, L: {self.L}")
 
 
 class Warehouse_Agents:
@@ -39,11 +39,23 @@ class Warehouse_Agents:
         '''resets the agent's scores and sets their run status to false'''
         for i in self.agents:
             i.run = False
-            i.score = 0
+            i.goalZone = i.number #TODO: is this really the best idea?
 
-    def request_help(self, requester):
-        
+    def request_help(self, requester):       
         helper = self.get_helper(requester)
+        if helper == -1:
+            print("ERROR, no helpers left!!")
+            return
+        if not helper.needHelp: #Helper's goal zone is fully unloaded
+            if helper.N:
+                helper.goalZone = requester.number
+            else:
+                helper.goalZone = helper.number
+        else:
+            if helper.L:
+                helper.goalZone = requester.number
+            else:
+                helper.goalZone = helper.number
 
 
     def get_helper(self, requester):
@@ -51,15 +63,16 @@ class Warehouse_Agents:
         Run when an agent has items in their warehouse to unload
         Selects an agent that hasn't run yet, ideally with the same tag, and asks for help
         '''
-        index = -1
-        for i in range(self.num_agents):
-            if self.agents[i].run == False and i != requester:
-                if self.agents[i].tag == self.agents[requester].tag:
-                    self.agents[i].run = True
-                    return self.agents[i]
-                if index == -1:
-                    index = i
-        return index
+        agent = requester #This default value should never be used
+        for a in self.agents:
+            if not a.run and a != requester:
+                if a.tag == requester.tag:
+                    a.run = True
+                    return a
+                if agent == requester:
+                    agent = a
+        agent.run = True
+        return agent
 
 
     def evolve(self, mutation1Chance = .1, mutation2Chance = .1):

@@ -14,7 +14,7 @@ import random
 # Instantiate Robotarium object
 N = 16 #Number of agents
 G = 4 #Number of goals
-iterations = 667 #Number of steps to run the simulation for (each takes ~.033 seconds)
+iterations = 1000 #Number of steps to run the simulation (each takes ~.033 seconds)
 p = .01
 s = 1000
 
@@ -42,7 +42,6 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-agents = Warehouse_Agents(num_agents=N, useTags = True)
 show_figure = True
 
 initial_conditions = generate_initial_conditions(N)
@@ -52,12 +51,14 @@ r = robotarium.Robotarium(number_of_robots=N, show_figure=show_figure, initial_c
 x = r.get_poses()
 x_si = uni_to_si_states(x)
 
+
 # Plotting Parameters
 CM = plt.cm.get_cmap('hsv', G+1) # Agent/goal color scheme
 
 goal_marker_size_m = 2
 loads = np.zeros(G) #Loads to be unloaded for each zone
 scores = np.zeros(G) #The score for each group of agents
+agents = Warehouse_Agents(num_agents=N, useTags = True)
 
 if show_figure:
     pie_slice = [1.0 / G] * G
@@ -89,45 +90,62 @@ if show_figure:
 r.step()
 
 for t in range(iterations):
-    # for p in playingAgents:
-    #     print(p)
-    for i in range(G):
-        if loads[i] == 0:
-            if random.random() <= p:
-                loads[i]+=s
+    if t % 1 == 0:
+        #Reloads the zones
+        for i in range(G):
+            if loads[i] == 0:
+                if random.random() <= p:
+                    loads[i]+=s
+        
+        #Updates the statuses of each agent
+        for i in range(N):
+            if loads[i%G] == 0:
+                agents.agents[i].needHelp = False
+            else:
+                agents.agents[i].needHelp = True
 
-    goals = []
-    for i in range(3): #X, Y and Z
-        goal = []
+        #Request for help
+        for a in agents.agents:
+            if a.needHelp:
+                agents.request_help(a)
+        
+        for a in agents.agents:
+            print(a)
+
+        #Gets the goal locations for each agent
+        goals = []
+        for i in range(3): #X, Y and Z
+            goal = []
+            for j in range(N):
+                goal.append(goal_points[i][agents.agents[j].goalZone%G])
+            goals.append(goal)
+        goals = np.array(goals)
+
+        # Get poses of agents
+        x = r.get_poses()
+
+        #Update the agents' scores
         for j in range(N):
-            # if playingAgents[j].collaborate == True:
-            #     if j == N-1:
-            #         goal.append(goal_points[i][0])
-            #     else:
-            #         goal.append(goal_points[i][j+1])
-            goal.append(goal_points[i][j%G])
-        goals.append(goal)
-    goals = np.array(goals)
+            if x[0][j]**2 + x[1][j]**2 <= 1**2:
+                for k in range(G):
+                    current_theta = np.arctan2(x[1][j], x[0][j])
+                    if current_theta < 0:
+                        current_theta += 2*np.pi
+                    if current_theta < thetas[k]:
+                        if loads[k] > 0:
+                            agents.agents[k].score += 1
+                            scores[k] += 1
+                            loads[k] -= 1
+                        break
 
-    # Get poses of agents
-    x = r.get_poses()
+        #agents.evolve()
+        agents.reset_agents()
 
-    #Update the agents' scores
-    for j in range(N):
-        if x[0][j]**2 + x[1][j]**2 <= 1**2:
-            for k in range(G):
-                current_theta = np.arctan2(x[1][j], x[0][j])
-                if current_theta < 0:
-                    current_theta += 2*np.pi
-                if current_theta < thetas[k]:
-                    if loads[k] > 0:
-                        scores[k] += 1
-                        loads[k] -= 1
-                    break
+    else:
+        x = r.get_poses()
 
     x_si = uni_to_si_states(x)
 
-    #Update Plot
     # Update Robot Marker Plotted Visualization
     if show_figure:
         for i in range(x.shape[1]):
@@ -158,6 +176,7 @@ for t in range(iterations):
     r.set_velocities(np.arange(N), dxu)
     # Iterate the simulation
     r.step()
+
     # time.sleep(2)
 
 print(scores)
