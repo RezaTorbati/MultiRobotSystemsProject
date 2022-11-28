@@ -14,9 +14,9 @@ import random
 # Instantiate Robotarium object
 N = 16 #Number of agents
 G = 4 #Number of goals
-iterations = 1000 #Number of steps to run the simulation (each takes ~.033 seconds)
-p = .01
-s = 1000
+iterations = 10000 #Number of steps to run the simulation (each takes ~.033 seconds)
+p = .1
+s = 200
 
 thetas = []
 for i in range(G):
@@ -51,14 +51,13 @@ r = robotarium.Robotarium(number_of_robots=N, show_figure=show_figure, initial_c
 x = r.get_poses()
 x_si = uni_to_si_states(x)
 
-
 # Plotting Parameters
 CM = plt.cm.get_cmap('hsv', G+1) # Agent/goal color scheme
 
 goal_marker_size_m = 2
 loads = np.zeros(G) #Loads to be unloaded for each zone
 scores = np.zeros(G) #The score for each group of agents
-agents = Warehouse_Agents(num_agents=N, useTags = True)
+agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10)
 
 if show_figure:
     pie_slice = [1.0 / G] * G
@@ -90,7 +89,7 @@ if show_figure:
 r.step()
 
 for t in range(iterations):
-    if t % 1 == 0:
+    if t % 100 == 0:
         #Reloads the zones
         for i in range(G):
             if loads[i] == 0:
@@ -111,6 +110,7 @@ for t in range(iterations):
         
         for a in agents.agents:
             print(a)
+        print()
 
         #Gets the goal locations for each agent
         goals = []
@@ -138,7 +138,9 @@ for t in range(iterations):
                             loads[k] -= 1
                         break
 
-        #agents.evolve()
+        if t > 100: #Waits for agents to get into positions before evolving
+            agents.evolve()
+        
         agents.reset_agents()
 
     else:
@@ -179,7 +181,7 @@ for t in range(iterations):
 
     # time.sleep(2)
 
-print(scores)
+print(scores, '\t', sum(scores))
 # agents.stats.pltCollaborating()
 
 #Call at end of script to print debug information and for your script to run on the Robotarium server properly

@@ -1,9 +1,10 @@
+import copy
 import random
 import numpy as np
 import matplotlib.pyplot as plt
 
 class Warehouse_Agent:
-    def __init__(self, tag, number, N=True, L=True):
+    def __init__(self, tag, number, N=False, L=False):
         self.tag = tag #The agent's tag number
         self.number = number #Does not change, agent's ID
         self.N = N #Agent will accept request for help if its own bay doesn't need unloaded
@@ -43,9 +44,10 @@ class Warehouse_Agents:
 
     def request_help(self, requester):       
         helper = self.get_helper(requester)
-        if helper == -1:
-            print("ERROR, no helpers left!!")
-            return
+
+        if helper == requester:
+            print("Warning: helper == requester")
+
         if not helper.needHelp: #Helper's goal zone is fully unloaded
             if helper.N:
                 helper.goalZone = requester.number
@@ -75,14 +77,14 @@ class Warehouse_Agents:
         return agent
 
 
-    def evolve(self, mutation1Chance = .1, mutation2Chance = .1):
+    def evolve(self, mutationNChance = .1, mutationLChance = .1, mutationTChance = .1):
         '''
         Updates the stats of the agents and then evolves them
         Evolution evolves agents proportionally to their score with a small chance of a mutation
         '''
-        self.stats.update(self.agents)
-        print(self.stats)
-        print()
+        #self.stats.update(self.agents)
+        #print(self.stats)
+        #print()
 
         #Gets the total scores and the cummulative scores
         totalScore = 0
@@ -90,29 +92,39 @@ class Warehouse_Agents:
         for a in self.agents:
             totalScore+=a.score
             cumSum.append(totalScore)
-        
+
         #Evolves the agents in proportion to their score
-        for a in self.agents:
+        startingAgents = copy.deepcopy(self.agents)
+        for a in range(self.num_agents):
             setAgent = False
             r = random.uniform(0,totalScore)
             for i in range(len(cumSum)-1):
                 if r >= cumSum[i] and r < cumSum[i+1]:
-                    a = self.agents[i]
+                    self.agents[a].N = startingAgents[i].N
+                    self.agents[a].L = startingAgents[i].L
+                    self.agents[a].tag = startingAgents[i].tag
                     setAgent = True
                     break
             if not setAgent: #Wants to evolve the last agent
-                a = self.agents[len(self.agents)-1]
+                self.agents[a].N = startingAgents[len(startingAgents)-1].N
+                self.agents[a].L = startingAgents[len(startingAgents)-1].L
+                self.agents[a].tag = startingAgents[len(startingAgents)-1].tag
             
 
-            #Mutation 1 changes if the agent collaborates or not
-            mutation1 = random.random()
-            if mutation1 < mutation1Chance:
-                a.collaborate = not a.collaborate
+            #mutationN changes agent's N bit
+            mutationN = random.random()
+            if mutationN < mutationNChance:
+                self.agents[a].N = not self.agents[a].N
+
+            #mutationL changes agent's L bit
+            mutationL = random.random()
+            if mutationL < mutationLChance:
+                self.agents[a].L = not self.agents[a].L
             
-            #Mutation 2 changes the agent's tag
-            mutation2 = random.random()
-            if mutation2 < mutation2Chance and self.useTags:
-                a.tag = round(random.uniform(0,self.tags))
+            #mutationT changes the agent's tag
+            mutationT = random.random()
+            if mutationT < mutationTChance and self.useTags:
+                self.agents[a].tag = round(random.uniform(0,self.tags))
 
 class Single_Iteration_Stats:
     def __init__(self, agents, tags):
