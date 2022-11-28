@@ -9,12 +9,14 @@ import matplotlib
 from agent import *
 
 import numpy as np
-import time
+import random
 
 # Instantiate Robotarium object
-N = 16
-G = 4
-iterations = 667 #Run the simulation/experiment for 1000 steps (1000*0.033 ~= 33sec)
+N = 16 #Number of agents
+G = 4 #Number of goals
+iterations = 667 #Number of steps to run the simulation for (each takes ~.033 seconds)
+p = .01
+s = 1000
 
 thetas = []
 for i in range(G):
@@ -54,7 +56,8 @@ x_si = uni_to_si_states(x)
 CM = plt.cm.get_cmap('hsv', G+1) # Agent/goal color scheme
 
 goal_marker_size_m = 2
-scores = np.zeros(N) #The score for each group of agents
+loads = np.zeros(G) #Loads to be unloaded for each zone
+scores = np.zeros(G) #The score for each group of agents
 
 if show_figure:
     pie_slice = [1.0 / G] * G
@@ -66,27 +69,35 @@ if show_figure:
     marker_size_goal = determine_marker_size(r,goal_marker_size_m)
 
     marker_size_robot = determine_marker_size(r, robot_marker_size_m)
-    font_size = determine_font_size(r,0.1)
+    font_size = determine_font_size(r,0.08)
     line_width = 5
 
     # Create Goal Point Markers
     #Text with goal identification
+    loads_caption = ['{0}'.format(ii) for ii in loads]
     goal_caption = ['{0}'.format(ii) for ii in scores]
 
     #Plot text for caption
     goal_points_text = [r.axes.text(goal_points[0,ii], goal_points[1,ii]-robot_marker_size_m-.05, goal_caption[ii], fontsize=font_size, color='k',fontweight='bold',horizontalalignment='center',verticalalignment='center',zorder=-2)
-    for ii in range(goal_points.shape[1])]    
+        for ii in range(goal_points.shape[1])] 
+    loads_text = [r.axes.text(goal_points[0,ii], goal_points[1,ii]-robot_marker_size_m+.05, loads_caption[ii], fontsize=font_size, color='k',fontweight='bold',horizontalalignment='center',verticalalignment='center',zorder=-2)
+        for ii in range(goal_points.shape[1])]    
 
     robot_markers = [r.axes.scatter(x[0,ii], x[1,ii], s=marker_size_robot, marker='o', facecolors='none',edgecolors=CM(ii%G),linewidth=line_width) 
-    for ii in range(N)]
+        for ii in range(N)]
 
 r.step()
 
 for t in range(iterations):
     # for p in playingAgents:
     #     print(p)
+    for i in range(G):
+        if loads[i] == 0:
+            if random.random() <= p:
+                loads[i]+=s
+
     goals = []
-    for i in range(3):
+    for i in range(3): #X, Y and Z
         goal = []
         for j in range(N):
             # if playingAgents[j].collaborate == True:
@@ -109,7 +120,9 @@ for t in range(iterations):
                 if current_theta < 0:
                     current_theta += 2*np.pi
                 if current_theta < thetas[k]:
-                    scores[k] += 1
+                    if loads[k] > 0:
+                        scores[k] += 1
+                        loads[k] -= 1
                     break
 
     x_si = uni_to_si_states(x)
@@ -123,9 +136,12 @@ for t in range(iterations):
             # This should be removed when submitting to the Robotarium.
             robot_markers[i].set_sizes([determine_marker_size(r, robot_marker_size_m)])
 
-        for j in range(goal_points.shape[1]):
-            goal_points_text[j].set_text(scores[j])
-            goal_points_text[j].set_zorder(-1)
+        for i in range(goal_points.shape[1]):
+            goal_points_text[i].set_text(scores[i])
+            goal_points_text[i].set_zorder(-1)
+
+            loads_text[i].set_text(loads[i])
+            loads_text[i].set_zorder(-1)
 
             # goal_markers[j].set_sizes([determine_marker_size(r, goal_marker_size_m)])
 

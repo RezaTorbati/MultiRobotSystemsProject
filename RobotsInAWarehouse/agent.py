@@ -3,21 +3,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Warehouse_Agent:
-    def __init__(self, tag, number, N=False, L=False, useTag = True):
+    def __init__(self, tag, number, N=False, L=False):
         self.tag = tag #The agent's tag number
-        self.number = number #Does not change, used purely for debugging
+        self.number = number #Does not change, agent's ID
         self.N = N #Agent will accept request for help if its own bay doesn't need unloaded
         self.L = L #Agent will accept request for help if its own bay needs unloaded
         self.run = False #If the agent has already run in an iteration or not
         self.score = 0 #The agents score
-        self.useTag = useTag
+
+        self.goalZone = number #The number for the agent's goal zone
+        self.needHelp = False #This is True is the agent's bay is not empty
      
     def __str__(self):
-        return (f"Agent {self.number}:\tTag: {self.tag}, Cooperating: {self.collaborate}")
+        return (f"Agent {self.number}:\tTag: {self.tag}, N: {self.N}, L: {self.L}")
 
 
 class Warehouse_Agents:
-    def __init__(self, num_agents = 16, useTags = True, tags = -1):
+    def __init__(self, num_agents = 16, useTags = True, num_tags = -1):
         self.useTags = useTags
 
         self.num_agents = num_agents
@@ -25,13 +27,13 @@ class Warehouse_Agents:
         for i in range(self.num_agents):
             if self.useTags:
                 self.agents.append(Warehouse_Agent(i,i))
-            else:
+            else: #sets tag to -1 for every agent if useTags == False
                 self.agents.append(Warehouse_Agent(-1,i))
-        if tags == -1:
-            self.tags = len(self.agents)
+        if num_tags == -1:
+            self.tags = num_agents
         else:
-            self.tags = tags
-        self.stats = Agent_Stats(self.tags)
+            self.tags = num_tags
+        #self.stats = Agent_Stats(self.tags) #TODO: warehouse stats
         
     def reset_agents(self):
         '''resets the agent's scores and sets their run status to false'''
@@ -39,42 +41,26 @@ class Warehouse_Agents:
             i.run = False
             i.score = 0
 
-    def select_agents(self):
-        '''
-        Returns two agents that have not run and, if possible, with the same tag
-        If all agents has run, evolves the agents, resets them, and then choose two new agents to return
-        '''
-        index1 = -1
-        index2 = -1
+    def request_help(self, requester):
+        
+        helper = self.get_helper(requester)
 
-        #First, tries to find two agents with the same tag that haven't run
-        #If it cannot find two agents with the same tag, takes the first agent it sees for index 1
+
+    def get_helper(self, requester):
+        '''
+        Run when an agent has items in their warehouse to unload
+        Selects an agent that hasn't run yet, ideally with the same tag, and asks for help
+        '''
+        index = -1
         for i in range(self.num_agents):
-            if self.agents[i].run == False:
-                for j in range(i+1, self.num_agents):
-                    if self.agents[j].run == False and self.agents[j].tag == self.agents[i].tag:
-                        index1 = i
-                        index2 = j
-                        break
-                if index1 == -1:
-                    index1 = i
+            if self.agents[i].run == False and i != requester:
+                if self.agents[i].tag == self.agents[requester].tag:
+                    self.agents[i].run = True
+                    return self.agents[i]
+                if index == -1:
+                    index = i
+        return index
 
-        #If all of the agents have run
-        if index1 == -1:
-            self.evolve()
-            self.reset_agents()
-            return self.select_agents()
-
-        #If none of the agents that haven't run have the same tags
-        if index2 == -1:
-            for i in range(index1+1, self.num_agents):
-                if self.agents[i].run == False:
-                    index2 = i
-                    break
-
-        self.agents[index1].run = True
-        self.agents[index2].run = True
-        return self.agents[index1], self.agents[index2]
 
     def evolve(self, mutation1Chance = .1, mutation2Chance = .1):
         '''
@@ -117,10 +103,11 @@ class Warehouse_Agents:
 
 class Single_Iteration_Stats:
     def __init__(self, agents, tags):
+        '''tags is the number of tags used'''
         self.stats = {}
         self.stats['collaborating'] = 0
         self.stats['selfish'] = 0
-        self.stats['tags'] = [0] * tags #Assumes number of tags == number of agents
+        self.stats['tags'] = [0] * tags
         for a in agents:
             if a.collaborate:
                 self.stats['collaborating']+=1
