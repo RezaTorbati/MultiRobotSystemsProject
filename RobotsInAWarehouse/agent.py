@@ -20,16 +20,21 @@ class Warehouse_Agent:
 
 
 class Warehouse_Agents:
-    def __init__(self, num_agents = 16, useTags = True, num_tags = -1):
+    def __init__(self, num_agents = 16, useTags = True, num_tags = -1, N=False, L=False):
+        '''
+        num_tags is the range of tags that may be given during evolution
+        N is the default value for the N bit
+        L is the default value for the L bit
+        '''
         self.useTags = useTags
 
         self.num_agents = num_agents
         self.agents = []
         for i in range(self.num_agents):
             if self.useTags:
-                self.agents.append(Warehouse_Agent(i,i))
+                self.agents.append(Warehouse_Agent(i,i, N=N, L=L))
             else: #sets tag to -1 for every agent if useTags == False
-                self.agents.append(Warehouse_Agent(-1,i))
+                self.agents.append(Warehouse_Agent(-1,i, N=N, L=L))
         if num_tags == -1:
             self.tags = num_agents
         else:
@@ -77,7 +82,7 @@ class Warehouse_Agents:
         return agent
 
 
-    def evolve(self, mutationNChance = .1, mutationLChance = .1, mutationTChance = .1):
+    def evolve(self, mutationNChance = .01, mutationLChance = .01, mutationTChance = .05):
         '''
         Updates the stats of the agents and then evolves them
         Evolution evolves agents proportionally to their score with a small chance of a mutation
@@ -155,17 +160,22 @@ class Agent_Stats:
     def update(self, agents):
         self.iterations.append(Single_Iteration_Stats(agents, self.tags))
 
-    def pltCollaborating(self):
+    def pltCollaborating(self, name=''):
         N = []
         L = []
         scores = []
         evolutions = []
+        if name != '':
+            f = open(f'{name}.txt', 'w')
         for i in range(len(self.iterations)):
             N.append(self.iterations[i].stats['N'])
             L.append(self.iterations[i].stats['L'])
             scores.append(self.iterations[i].stats['score'])
             evolutions.append(i+1)
-        
+            if name != '':
+                f.write(f'{self.iterations[i].stats["N"]}, {self.iterations[i].stats["L"]}, {self.iterations[i].stats["score"]}\n')
+        if name != '':
+            f.close()
         plt.close()
         fig,a = plt.subplots(2)
         a[0].plot(evolutions,N, label='N bits true')
@@ -177,7 +187,8 @@ class Agent_Stats:
         a[1].set_ylabel("Score")
         plt.xlabel("Evolutions")
         plt.show()
-        plt.savefig('test')
+        if name != '':
+            plt.savefig(name)
         
 
     def __str__(self):

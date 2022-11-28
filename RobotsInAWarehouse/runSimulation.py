@@ -14,8 +14,8 @@ import random
 # Instantiate Robotarium object
 N = 16 #Number of agents
 G = 4 #Number of goals
-iterations = 601 #Number of steps to run the simulation (each takes ~.033 seconds)
-p = .25
+iterations = 100001 #Number of steps to run the simulation (each takes ~.033 seconds)
+p = .1
 s = 200
 
 thetas = []
@@ -42,7 +42,7 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-show_figure = True
+show_figure = False
 
 initial_conditions = generate_initial_conditions(N)
 r = robotarium.Robotarium(number_of_robots=N, show_figure=show_figure, initial_conditions=initial_conditions, sim_in_real_time=False)
@@ -57,7 +57,11 @@ CM = plt.cm.get_cmap('hsv', G+1) # Agent/goal color scheme
 goal_marker_size_m = 2
 loads = np.zeros(G) #Loads to be unloaded for each zone
 scores = np.zeros(G) #The score for each group of agents
-agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10)
+
+#Next three lines are all that are needed to change the experiment
+expType = 'default'
+evolve = True
+agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
 
 if show_figure:
     pie_slice = [1.0 / G] * G
@@ -89,7 +93,7 @@ if show_figure:
 r.step()
 
 for t in range(iterations):
-    if t % 10 == 0:
+    if t % 100 == 0:
         #Reloads the zones
         for i in range(G):
             if loads[i] == 0:
@@ -104,6 +108,7 @@ for t in range(iterations):
                 agents.agents[i].needHelp = True
 
         #Request for help
+        random.shuffle(agents.agents)
         for a in agents.agents:
             if a.needHelp:
                 agents.request_help(a)
@@ -138,8 +143,12 @@ for t in range(iterations):
                             loads[k] -= 1
                         break
 
-        if t > 100: #Waits for agents to get into positions before evolving
+        if t > 100 and evolve: #Waits for agents to get into positions before evolving
             agents.evolve()
+        elif t>100:
+            agents.stats.update(agents.agents)
+            print(agents.stats)
+            print()
         
         agents.reset_agents()
 
@@ -185,4 +194,4 @@ print(scores, '\t', sum(scores))
 
 #Call at end of script to print debug information and for your script to run on the Robotarium server properly
 r.call_at_scripts_end()
-agents.stats.pltCollaborating()
+agents.stats.pltCollaborating(name = expType)
