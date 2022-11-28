@@ -47,27 +47,30 @@ class Warehouse_Agents:
             i.run = False
             i.goalZone = i.number #TODO: is this really the best idea?
 
-    def request_help(self, requester):       
+    def request_help(self, requester):     
+        '''
+        Finds an agent to request help from
+        requester should be of type agent and is the agent asking for help
+        '''  
         helper = self.get_helper(requester)
 
-        if helper == requester:
+        if helper == requester: #TODO: figure out why this occasionally happens
             print("Warning: helper == requester")
 
         if not helper.needHelp: #Helper's goal zone is fully unloaded
-            if helper.N:
+            if helper.N: #Accepts the request
                 helper.goalZone = requester.number
-            else:
+            else: #Rejects the request
                 helper.goalZone = helper.number
         else:
-            if helper.L:
+            if helper.L: #Accepts the request
                 helper.goalZone = requester.number
-            else:
+            else: #Rejects the request
                 helper.goalZone = helper.number
 
 
     def get_helper(self, requester):
         '''
-        Run when an agent has items in their warehouse to unload
         Selects an agent that hasn't run yet, ideally with the same tag, and asks for help
         '''
         agent = requester #This default value should never be used
@@ -172,19 +175,26 @@ class Agent_Stats:
             L.append(self.iterations[i].stats['L'])
             scores.append(self.iterations[i].stats['score'])
             evolutions.append(i+1)
+
+            #Writes out key information. This could probably be done better
             if name != '':
                 f.write(f'{self.iterations[i].stats["N"]}, {self.iterations[i].stats["L"]}, {self.iterations[i].stats["score"]}\n')
         if name != '':
             f.close()
+        
         plt.close()
         fig,a = plt.subplots(2)
+        
+        #Figure that shows how the N and L bits changed over time
         a[0].plot(evolutions,N, label='N bits true')
         a[0].plot(evolutions,L, label = 'L bits true')
         a[0].set_ylabel("Agents")
         a[0].legend()
 
+        #Figure that shows how the score changes over time
         a[1].plot(evolutions,scores, label = 'Total Score')
         a[1].set_ylabel("Score")
+
         plt.xlabel("Evolutions")
         plt.show()
         if name != '':
