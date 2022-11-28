@@ -34,7 +34,7 @@ class Warehouse_Agents:
             self.tags = num_agents
         else:
             self.tags = num_tags
-        #self.stats = Agent_Stats(self.tags) #TODO: warehouse stats
+        self.stats = Agent_Stats(self.tags)
         
     def reset_agents(self):
         '''resets the agent's scores and sets their run status to false'''
@@ -82,9 +82,9 @@ class Warehouse_Agents:
         Updates the stats of the agents and then evolves them
         Evolution evolves agents proportionally to their score with a small chance of a mutation
         '''
-        #self.stats.update(self.agents)
-        #print(self.stats)
-        #print()
+        self.stats.update(self.agents)
+        print(self.stats)
+        print()
 
         #Gets the total scores and the cummulative scores
         totalScore = 0
@@ -130,21 +130,25 @@ class Single_Iteration_Stats:
     def __init__(self, agents, tags):
         '''tags is the number of tags used'''
         self.stats = {}
-        self.stats['collaborating'] = 0
-        self.stats['selfish'] = 0
+        self.stats['N'] = 0
+        self.stats['L'] = 0
+        self.stats['score'] = 0
         self.stats['tags'] = [0] * tags
         for a in agents:
-            if a.collaborate:
-                self.stats['collaborating']+=1
-            else:
-                self.stats['selfish'] += 1
-            self.stats['tags'][a.tag]+=1
+            if a.N:
+                self.stats['N']+=1
+            if a.L:
+                self.stats['L'] += 1
+            self.stats['score'] += a.score
+            self.stats['tags'][a.tag-1]+=1
+            
 
     def __str__(self):
         return str(self.stats)
 
 class Agent_Stats:
     def __init__(self, tags):
+        #Tags is the number of tags used here
         self.iterations = []
         self.tags = tags
 
@@ -152,21 +156,29 @@ class Agent_Stats:
         self.iterations.append(Single_Iteration_Stats(agents, self.tags))
 
     def pltCollaborating(self):
-        collab = []
-        selfish = []
+        N = []
+        L = []
+        scores = []
         evolutions = []
         for i in range(len(self.iterations)):
-            collab.append(self.iterations[i].stats['collaborating'])
-            selfish.append(self.iterations[i].stats['selfish'])
-            evolutions.append((i+1)*10)
-        print(collab)
-        print(selfish)
-        plt.plot(evolutions, collab, label='Collaborating Agents')
-        plt.plot(evolutions, selfish, label = 'Selfish Agents')
+            N.append(self.iterations[i].stats['N'])
+            L.append(self.iterations[i].stats['L'])
+            scores.append(self.iterations[i].stats['score'])
+            evolutions.append(i+1)
+        
+        plt.close()
+        fig,a = plt.subplots(2)
+        a[0].plot(evolutions,N, label='N bits true')
+        a[0].plot(evolutions,L, label = 'L bits true')
+        a[0].set_ylabel("Agents")
+        a[0].legend()
+
+        a[1].plot(evolutions,scores, label = 'Total Score')
+        a[1].set_ylabel("Score")
         plt.xlabel("Evolutions")
-        plt.ylabel("Agents")
-        plt.legend()
         plt.show()
+        plt.savefig('test')
+        
 
     def __str__(self):
         string = ''

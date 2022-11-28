@@ -14,8 +14,8 @@ import random
 # Instantiate Robotarium object
 N = 16 #Number of agents
 G = 4 #Number of goals
-iterations = 10000 #Number of steps to run the simulation (each takes ~.033 seconds)
-p = .1
+iterations = 601 #Number of steps to run the simulation (each takes ~.033 seconds)
+p = .25
 s = 200
 
 thetas = []
@@ -89,7 +89,7 @@ if show_figure:
 r.step()
 
 for t in range(iterations):
-    if t % 100 == 0:
+    if t % 10 == 0:
         #Reloads the zones
         for i in range(G):
             if loads[i] == 0:
@@ -108,9 +108,9 @@ for t in range(iterations):
             if a.needHelp:
                 agents.request_help(a)
         
-        for a in agents.agents:
-            print(a)
-        print()
+        #for a in agents.agents:
+        #    print(a)
+        #print()
 
         #Gets the goal locations for each agent
         goals = []
@@ -182,7 +182,7 @@ for t in range(iterations):
     # time.sleep(2)
 
 print(scores, '\t', sum(scores))
-# agents.stats.pltCollaborating()
 
 #Call at end of script to print debug information and for your script to run on the Robotarium server properly
 r.call_at_scripts_end()
+agents.stats.pltCollaborating()
