@@ -14,13 +14,14 @@ import random
 # Instantiate Robotarium object
 N = 16 #Number of agents
 G = 4 #Number of goals
-iterations = 1000001 #Number of steps to run the simulation (each takes ~.033 seconds)
 p = .1 #How likely a zone will be reloaded every update iteration
 s = 200 #How much a zone will be reloaded by every time one gets reloaded
 
-#Next three lines should be all that is needed to change the experiment
 expType = 'expResults/default' #set to '' if don't want to save results
 evolve = True
+evolveFrequency = 5 #Evolves once per this many updates
+updateFrequency = 100 #How many iterations per update
+iterations = 500 * updateFrequency * evolveFrequency #Number of steps to run the simulation (each takes ~.033 seconds)
 agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
 
 thetas = []
@@ -93,7 +94,7 @@ if show_figure:
 r.step()
 
 for t in range(iterations):
-    if t % 100 == 0: #Only changes agent's goals/updates agents every 100 iterations
+    if t % updateFrequency == 0: #Only changes agent's goals/updates agents every 100 iterations
         #Reloads the zones
         for i in range(G):
             if loads[i] == 0:
@@ -143,9 +144,9 @@ for t in range(iterations):
                             loads[k] -= 1
                         break
 
-        if t > 100 and evolve: #Waits for agents to get into positions before evolving
+        if t % updateFrequency*evolveFrequency == 0 and evolve:
             agents.evolve()
-        elif t>100:
+        elif t % updateFrequency*evolveFrequency == 0:
             agents.stats.update(agents.agents)
             print(agents.stats)
             print()
