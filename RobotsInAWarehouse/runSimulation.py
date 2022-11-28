@@ -14,9 +14,14 @@ import random
 # Instantiate Robotarium object
 N = 16 #Number of agents
 G = 4 #Number of goals
-iterations = 100001 #Number of steps to run the simulation (each takes ~.033 seconds)
+iterations = 1000001 #Number of steps to run the simulation (each takes ~.033 seconds)
 p = .1
 s = 200
+
+#Next three lines are all that are needed to change the experiment
+expType = 'expResults/default'
+evolve = True
+agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
 
 thetas = []
 for i in range(G):
@@ -57,11 +62,6 @@ CM = plt.cm.get_cmap('hsv', G+1) # Agent/goal color scheme
 goal_marker_size_m = 2
 loads = np.zeros(G) #Loads to be unloaded for each zone
 scores = np.zeros(G) #The score for each group of agents
-
-#Next three lines are all that are needed to change the experiment
-expType = 'default'
-evolve = True
-agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
 
 if show_figure:
     pie_slice = [1.0 / G] * G
