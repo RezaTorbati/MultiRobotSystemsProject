@@ -21,15 +21,15 @@ import random
 
 N = 16 #Number of agents
 G = 4 #Number of goals
-p = .05 #How likely a zone will be reloaded every update iteration
+p = .1 #How likely a zone will be reloaded every update iteration
 s = 400 #How much a zone will be reloaded by every time one gets reloaded
 
 expType = 'expResults/default_s100p25' #set to '' if don't want to save results
 evolve = True
 evolveFrequency = 5 #Evolves once per this many updates
-updateFrequency = 100 #How many iterations per update
+updateFrequency = 200 #How many iterations per update
 iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
-agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=False, L=False)
+agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=True, L=False)
 
 thetas = []
 for i in range(G):
@@ -71,6 +71,9 @@ goal_marker_size_m = 2
 loads = np.zeros(G) #Loads to be unloaded for each zone
 scores = np.zeros(G) #The score for each group of agents
 
+idle_count = np.zeros(N) #Number of time steps the agent spent idle
+update_step = 0
+
 if show_figure:
     pie_slice = [1.0 / G] * G
     p2,t2 = r.axes.pie(pie_slice, startangle=0, radius=1, center=(0, 0))
@@ -107,6 +110,9 @@ for t in range(iterations):
             if loads[i] == 0:
                 if random.random() <= p:
                     loads[i]+=s
+        # loads[0]+=s
+        if t != 0:
+            update_step += 1
         
         #Updates the statuses of each agent
         for i in range(N):
@@ -114,9 +120,12 @@ for t in range(iterations):
                 agents.agents[i].needHelp = False
             else:
                 agents.agents[i].needHelp = True
+            # print(agents.agents[i].needHelp)
 
         #Request for help
-        #random.shuffle(agents.agents)
+        # shuffled_list = agents.agents.copy()
+        # random.shuffle(shuffled_list)
+        # for a in shuffled_list:
         for a in agents.agents:
             if a.needHelp:
                 agents.request_help(a)
@@ -139,6 +148,7 @@ for t in range(iterations):
 
         #Update the agents' scores
         for j in range(N):
+            idle = True
             if x[0][j]**2 + x[1][j]**2 <= 1**2:
                 for k in range(G):
                     current_theta = np.arctan2(x[1][j], x[0][j])
@@ -149,7 +159,13 @@ for t in range(iterations):
                             agents.agents[k].score += 1
                             scores[k] += 1
                             loads[k] -= 1
+                            idle = False
                         break
+            if idle and t != 0:
+                idle_count[j] += 1
+                
+        if t != 0:
+            print('idle percent:', idle_count / update_step)
 
         if t % (updateFrequency*evolveFrequency) == 0 and evolve:
             agents.evolve()

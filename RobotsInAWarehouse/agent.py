@@ -59,13 +59,17 @@ class Warehouse_Agents:
 
         if not helper.needHelp: #Helper's goal zone is fully unloaded
             if helper.N: #Accepts the request
+                print('accept1', requester.number, helper.number)
                 helper.goalZone = requester.number
             else: #Rejects the request
+                print('reject1', requester.number, helper.number)
                 helper.goalZone = helper.number
         else:
             if helper.L: #Accepts the request
+                print('accept2', requester.number, helper.number)
                 helper.goalZone = requester.number
             else: #Rejects the request
+                print('reject2', requester.number, helper.number)
                 helper.goalZone = helper.number
 
 
@@ -74,7 +78,9 @@ class Warehouse_Agents:
         Selects an agent that hasn't run yet, ideally with the same tag, and asks for help
         '''
         agent = requester #This default value should never be used
-        for a in self.agents:
+        shuffled_list = self.agents.copy()
+        random.shuffle(shuffled_list)
+        for a in shuffled_list:
             if not a.run and a != requester:
                 if a.tag == requester.tag:
                     a.run = True
@@ -91,8 +97,8 @@ class Warehouse_Agents:
         Evolution evolves agents proportionally to their score with a small chance of a mutation
         '''
         self.stats.update(self.agents)
-        #print(self.stats)
-        #print()
+        print(self.stats)
+        print()
 
         #Gets the total scores and the cummulative scores
         totalScore = 0
