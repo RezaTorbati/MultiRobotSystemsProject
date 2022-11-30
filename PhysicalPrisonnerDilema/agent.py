@@ -1,4 +1,5 @@
 from cProfile import label
+import copy
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -43,15 +44,17 @@ class PD_Tagged_Agents:
         Returns two agents that have not run and, if possible, with the same tag
         If all agents has run, evolves the agents, resets them, and then choose two new agents to return
         '''
+        shuffled_list = self.agents.copy()
+        random.shuffle(shuffled_list)
         index1 = -1
         index2 = -1
 
         #First, tries to find two agents with the same tag that haven't run
         #If it cannot find two agents with the same tag, takes the first agent it sees for index 1
         for i in range(self.num_agents):
-            if self.agents[i].run == False:
+            if shuffled_list[i].run == False:
                 for j in range(i+1, self.num_agents):
-                    if self.agents[j].run == False and self.agents[j].tag == self.agents[i].tag:
+                    if shuffled_list[j].run == False and shuffled_list[j].tag == shuffled_list[i].tag:
                         index1 = i
                         index2 = j
                         break
@@ -67,13 +70,13 @@ class PD_Tagged_Agents:
         #If none of the agents that haven't run have the same tags
         if index2 == -1:
             for i in range(index1+1, self.num_agents):
-                if self.agents[i].run == False:
+                if shuffled_list[i].run == False:
                     index2 = i
                     break
 
-        self.agents[index1].run = True
-        self.agents[index2].run = True
-        return self.agents[index1], self.agents[index2]
+        shuffled_list[index1].run = True
+        shuffled_list[index2].run = True
+        return shuffled_list[index1], shuffled_list[index2]
 
     def evolve(self, mutation1Chance = .05, mutation2Chance = .1):
         '''
@@ -92,16 +95,19 @@ class PD_Tagged_Agents:
             cumSum.append(totalScore)
         
         #Evolves the agents in proportion to their score
+        startingAgents = copy.deepcopy(self.agents)
         for a in self.agents:
             setAgent = False
             r = random.uniform(0,totalScore)
             for i in range(len(cumSum)-1):
                 if r >= cumSum[i] and r < cumSum[i+1]:
-                    a = self.agents[i]
+                    a.tag = startingAgents[i].tag
+                    a.collaborate = startingAgents[i].collaborate
                     setAgent = True
                     break
             if not setAgent: #Wants to evolve the last agent
-                a = self.agents[len(self.agents)-1]
+                a.tag = startingAgents[len(self.agents)-1].tag
+                a.collaborate = startingAgents[len(self.agents)-1].collaborate
             
 
             #Mutation 1 changes if the agent collaborates or not
@@ -112,14 +118,14 @@ class PD_Tagged_Agents:
             #Mutation 2 changes the agent's tag
             mutation2 = random.random()
             if mutation2 < mutation2Chance and self.useTags:
-                a.tag = round(random.uniform(0,self.num_agents*2-1))
+                a.tag = round(random.uniform(0,self.num_agents*10-1))
 
 class Single_Iteration_Stats:
     def __init__(self, agents):
         self.stats = {}
         self.stats['collaborating'] = 0
         self.stats['selfish'] = 0
-        self.stats['tags'] = [0] * len(agents)*2 #Assumes number of tags == number of agents
+        self.stats['tags'] = [0] * len(agents)*10 #Assumes number of tags == number of agents
         for a in agents:
             if a.collaborate:
                 self.stats['collaborating']+=1
@@ -155,8 +161,9 @@ class Agent_Stats:
         plt.show()
 
     def __str__(self):
-        string = ''
-        for i in self.iterations:
-            string += str(i.stats)+'\n'
-        return string
+        #string = ''
+        #for i in self.iterations:
+        #    string += str(i.stats)+'\n'
+        #return string
+        return str(self.iterations[-1])
 
