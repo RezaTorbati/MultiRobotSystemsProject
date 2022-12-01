@@ -28,7 +28,7 @@ si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 agents = PD_Tagged_Agents(num_agents=400, useTags = True)
 show_figure = False
 
-trainingSteps = 5000001
+trainingSteps = 100001
 startTime = time.time()
 for step in range(trainingSteps):
     scores = [0,0]

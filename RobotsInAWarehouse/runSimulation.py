@@ -25,11 +25,11 @@ p = .05 #How likely a zone will be reloaded every update iteration
 s = 400 #How much a zone will be reloaded by every time one gets reloaded
 
 expType = 'expResults/ntrue_s400p05' #set to '' if don't want to save results
-evolve = True
+evolve = False
 evolveFrequency = 5 #Evolves once per this many updates
 updateFrequency = 200 #How many iterations per update
 iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
-agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
+agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=True, L=False)
 
 thetas = []
 for i in range(G):
