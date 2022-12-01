@@ -1,4 +1,5 @@
 import copy
+import math
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,6 +13,7 @@ class Warehouse_Agent:
         self.run = False #If the agent has already run in an iteration or not
         self.score = 0 #The agents score
 
+        self.idlePercent = -1
         self.goalZone = number #The number for the agent's goal zone
         self.needHelp = False #This is True is the agent's bay is not empty
      
@@ -59,17 +61,17 @@ class Warehouse_Agents:
 
         if not helper.needHelp: #Helper's goal zone is fully unloaded
             if helper.N: #Accepts the request
-                print('accept1', requester.number, helper.number)
+                #print('accept1', requester.number, helper.number)
                 helper.goalZone = requester.number
             else: #Rejects the request
-                print('reject1', requester.number, helper.number)
+                #print('reject1', requester.number, helper.number)
                 helper.goalZone = helper.number
         else:
             if helper.L: #Accepts the request
-                print('accept2', requester.number, helper.number)
+                #print('accept2', requester.number, helper.number)
                 helper.goalZone = requester.number
             else: #Rejects the request
-                print('reject2', requester.number, helper.number)
+                #print('reject2', requester.number, helper.number)
                 helper.goalZone = helper.number
 
 
@@ -147,6 +149,7 @@ class Single_Iteration_Stats:
         self.stats['N'] = 0
         self.stats['L'] = 0
         self.stats['score'] = 0
+        self.stats['idlePercent'] = 0
         self.stats['tags'] = [0] * tags
         for a in agents:
             if a.N:
@@ -154,7 +157,12 @@ class Single_Iteration_Stats:
             if a.L:
                 self.stats['L'] += 1
             self.stats['score'] += a.score
+            self.stats['idlePercent'] += a.idlePercent
             self.stats['tags'][a.tag-1]+=1
+
+        self.stats['idlePercent']/=len(agents)
+        if math.isnan(self.stats['idlePercent']):
+            self.stats['idlePercent'] = 1.0
             
 
     def __str__(self):
@@ -175,7 +183,8 @@ class Agent_Stats:
         scores = []
         evolutions = []
         if name != '':
-            f = open(f'{name}.txt', 'w')
+            f = open(f'{name}.csv', 'w')
+            f.write('N,L,score,idlePercent\n')
         for i in range(len(self.iterations)):
             N.append(self.iterations[i].stats['N'])
             L.append(self.iterations[i].stats['L'])
@@ -184,7 +193,7 @@ class Agent_Stats:
 
             #Writes out key information. This could probably be done better
             if name != '':
-                f.write(f'{self.iterations[i].stats["N"]}, {self.iterations[i].stats["L"]}, {self.iterations[i].stats["score"]}\n')
+                f.write(f'{self.iterations[i].stats["N"]},{self.iterations[i].stats["L"]},{self.iterations[i].stats["score"]},{self.iterations[i].stats["idlePercent"]}\n')
         if name != '':
             f.close()
         
@@ -202,14 +211,16 @@ class Agent_Stats:
         a[1].set_ylabel("Score")
 
         plt.xlabel("Evolutions")
+        print('MANUALLY SAVE THIS, SAVEFIG ISN"T WORKING')
         plt.show()
         if name != '':
             plt.savefig(name)
         
 
     def __str__(self):
-        string = ''
-        for i in self.iterations:
-            string += str(i.stats)+'\n'
-        return string
+        #string = ''
+        #for i in self.iterations:
+        #    string += str(i.stats)+'\n'
+        #return string
+        return str(self.iterations[-1])
 
