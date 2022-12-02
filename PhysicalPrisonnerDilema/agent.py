@@ -78,7 +78,7 @@ class PD_Tagged_Agents:
         shuffled_list[index2].run = True
         return shuffled_list[index1], shuffled_list[index2]
 
-    def evolve(self, mutation1Chance = .05, mutation2Chance = .1):
+    def evolve(self, mutation1Chance = .01, mutation2Chance = .01):
         '''
         Updates the stats of the agents and then evolves them
         Evolution evolves agents proportionally to their score with a small chance of a mutation
@@ -118,14 +118,14 @@ class PD_Tagged_Agents:
             #Mutation 2 changes the agent's tag
             mutation2 = random.random()
             if mutation2 < mutation2Chance and self.useTags:
-                a.tag = round(random.uniform(0,self.num_agents*10-1))
+                a.tag = round(random.uniform(0,self.num_agents*2-1))
 
 class Single_Iteration_Stats:
     def __init__(self, agents):
         self.stats = {}
         self.stats['collaborating'] = 0
         self.stats['selfish'] = 0
-        self.stats['tags'] = [0] * len(agents)*10 #Assumes number of tags == number of agents
+        self.stats['tags'] = [0] * len(agents)*2 #Assumes number of tags == number of agents
         for a in agents:
             if a.collaborate:
                 self.stats['collaborating']+=1

@@ -25,7 +25,7 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 #800a30ke
-agents = PD_Tagged_Agents(num_agents=400, useTags = True)
+agents = PD_Tagged_Agents(num_agents=400, useTags = False)
 show_figure = False
 
 trainingSteps = 100001

@@ -13,18 +13,12 @@ import random
 
 # Instantiate Robotarium object
 
-#TODO: Run simulations where
-#evolve is True and useTags is True, evolve is True and useTags is false
-#evolve is False and N is True and L is False
-#evolve is False and N and L are both False
-#Repeat for p = .25 and s=100, p=.05 s=400, p=.01 s=1000
-
 N = 16 #Number of agents
 G = 4 #Number of goals
-p = .05 #How likely a zone will be reloaded every update iteration
-s = 400 #How much a zone will be reloaded by every time one gets reloaded
+p = .005 #How likely a zone will be reloaded every update iteration
+s = 1500 #How much a zone will be reloaded by every time one gets reloaded
 
-expType = 'expResults/ntrue_s400p05' #set to '' if don't want to save results
+expType = 'expResults/ntrue_s1500p005' #set to '' if don't want to save results
 evolve = False
 evolveFrequency = 5 #Evolves once per this many updates
 updateFrequency = 200 #How many iterations per update
