@@ -13,17 +13,17 @@ import random
 
 # Instantiate Robotarium object
 
-N = 16 #Number of agents
+N = 20 #Number of agents
 G = 4 #Number of goals
-p = .005 #How likely a zone will be reloaded every update iteration
-s = 1500 #How much a zone will be reloaded by every time one gets reloaded
+p = .01 #How likely a zone will be reloaded every update iteration
+s = 1000 #How much a zone will be reloaded by every time one gets reloaded
 
 expType = 'expResults/ntrue_s1500p005' #set to '' if don't want to save results
-evolve = False
+evolve = True
 evolveFrequency = 5 #Evolves once per this many updates
 updateFrequency = 200 #How many iterations per update
 iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
-agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=True, L=False)
+agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=False, L=False)
 
 thetas = []
 for i in range(G):
