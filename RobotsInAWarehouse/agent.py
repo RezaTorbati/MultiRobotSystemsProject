@@ -93,7 +93,7 @@ class Warehouse_Agents:
         return agent
 
 
-    def evolve(self, mutationNChance = .02, mutationLChance = .02, mutationTChance = .1):
+    def evolve(self, mutationNChance = .02, mutationLChance = .02, mutationTChance = .05):
         '''
         Updates the stats of the agents and then evolves them
         Evolution evolves agents proportionally to their score with a small chance of a mutation

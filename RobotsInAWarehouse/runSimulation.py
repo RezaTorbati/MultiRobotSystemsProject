@@ -4,8 +4,6 @@ from rps.utilities.transformations import *
 from rps.utilities.barrier_certificates import *
 from rps.utilities.misc import *
 from rps.utilities.controllers import *
-import matplotlib.cm as cm
-import matplotlib
 from agent import *
 
 import numpy as np
@@ -18,12 +16,12 @@ G = 4 #Number of goals
 p = .01 #How likely a zone will be reloaded every update iteration
 s = 1000 #How much a zone will be reloaded by every time one gets reloaded
 
-expType = 'expResults/ntrue_s1500p005' #set to '' if don't want to save results
+expType = 'expResults/20tagged_s1000p01' #set to '' if don't want to save results
 evolve = True
 evolveFrequency = 5 #Evolves once per this many updates
 updateFrequency = 200 #How many iterations per update
 iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
-agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=False, L=False)
+agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
 
 thetas = []
 for i in range(G):
