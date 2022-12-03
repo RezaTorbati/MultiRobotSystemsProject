@@ -1,6 +1,7 @@
 import copy
 import math
 import random
+from time import sleep
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,6 +13,9 @@ class Warehouse_Agent:
         self.L = L #Agent will accept request for help if its own bay needs unloaded
         self.run = False #If the agent has already run in an iteration or not
         self.score = 0 #The agents score
+
+        self.xPos = 0
+        self.yPos = 0
 
         self.idlePercent = -1
         self.goalZone = number #The number for the agent's goal zone
@@ -49,15 +53,16 @@ class Warehouse_Agents:
             i.run = False
             i.goalZone = i.number #TODO: is this really the best idea?
 
-    def request_help(self, requester):     
+    def request_help(self, requester, radius=2):     
         '''
         Finds an agent to request help from
         requester should be of type agent and is the agent asking for help
         '''  
-        helper = self.get_helper(requester)
+        helper = self.get_helper(requester, radius)
 
         if helper == requester: #TODO: figure out why this occasionally happens
             print("Warning: helper == requester")
+            return
 
 
         if not helper.needHelp: #Helper's goal zone is fully unloaded
@@ -75,33 +80,34 @@ class Warehouse_Agents:
                 #print('reject2', requester.number, helper.number)
                 helper.goalZone = helper.number
 
-
-    def get_helper(self, requester):
+    def get_helper(self, requester, radius):
         '''
         Selects an agent that hasn't run yet, ideally with the same tag, and asks for help
         '''
-        agent = requester #This default value should never be used
+        agent = requester
         shuffled_list = self.agents.copy()
         random.shuffle(shuffled_list)
         for a in shuffled_list:
-            if not a.run and a != requester:
+            dist = ((a.xPos-requester.xPos)**2 + (a.yPos - requester.yPos)**2)**.5
+            if not a.run and a.number != requester.number and dist <= radius:
                 if a.tag == requester.tag:
                     a.run = True
                     return a
                 if agent == requester:
                     agent = a
-        agent.run = True
+        if agent != requester:
+            agent.run = True
         return agent
 
 
-    def evolve(self, mutationNChance = .02, mutationLChance = .02, mutationTChance = .05):
+    def evolve(self, mutationNChance = .2, mutationLChance = .2, mutationTChance = .05):
         '''
         Updates the stats of the agents and then evolves them
         Evolution evolves agents proportionally to their score with a small chance of a mutation
         '''
         self.stats.update(self.agents)
-        # print(self.stats)
-        # print()
+        print(self.stats)
+        print()
 
         #Gets the total scores and the cummulative scores
         totalScore = 0
@@ -216,6 +222,7 @@ class Agent_Stats:
         plt.show()
         if name != '':
             plt.savefig(name)
+        sleep(.01)
         
 
     def __str__(self):

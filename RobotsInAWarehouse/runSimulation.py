@@ -20,15 +20,16 @@ import random
 N = 20 #Number of agents
 G = 4 #Number of goals
 
-p = .25 #How likely a zone will be reloaded every update iteration
-s = 100 #How much a zone will be reloaded by every time one gets reloaded
+p = .01 #How likely a zone will be reloaded every update iteration
+s = 1000 #How much a zone will be reloaded by every time one gets reloaded
 
-expType = 'expResults/20tagged_s100p25' #set to '' if don't want to save results
-evolve = True
+expType = 'expResults/20r_selfish_s1000p01' #set to '' if don't want to save results
+evolve = False
+helpRadius = 1.2
 evolveFrequency = 5 #Evolves once per this many updates
-updateFrequency = 200 #How many iterations per update
+updateFrequency = 75 #How many iterations per update
 iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
-agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=True, L=False)
+agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=False, L=False)
 
 thetas = []
 for i in range(G):
@@ -103,6 +104,9 @@ if show_figure:
 r.step()
 
 for t in range(iterations):
+    # Get poses of agents
+    x = r.get_poses()
+
     if t % updateFrequency == 0: #Only changes agent's goals/updates agents every 100 iterations
         #Reloads the zones
         for i in range(G):
@@ -124,7 +128,7 @@ for t in range(iterations):
         #Request for help
         for a in agents.agents:
             if a.needHelp:
-                agents.request_help(a)
+                agents.request_help(a, helpRadius)
         
         #for a in agents.agents:
         #    print(a)
@@ -137,10 +141,7 @@ for t in range(iterations):
             for j in range(N):
                 goal.append(goal_points[i][agents.agents[j].goalZone%G])
             goals.append(goal)
-        goals = np.array(goals)
-
-        # Get poses of agents
-        x = r.get_poses()
+        goals = np.array(goals)        
 
         #Update the agents' scores
         for j in range(N):
@@ -159,6 +160,8 @@ for t in range(iterations):
                         break
             if idle and t != 0:
                 idle_count[j] += 1
+            agents.agents[j].xPos = x[0][j]
+            agents.agents[j].yPos = x[1][j]
             agents.agents[j].idlePercent = idle_count[j] / update_step
                 
         #if t != 0:
@@ -166,8 +169,8 @@ for t in range(iterations):
         #    print('Total idle percent: ', sum(idle_count)/(update_step*N))
 
         if t % (updateFrequency*evolveFrequency) == 0 and evolve:
-            agents.evolve()
             print(t)
+            agents.evolve()
         elif t % (updateFrequency*evolveFrequency) == 0:
             agents.stats.update(agents.agents)
             # print(agents.stats)
@@ -175,9 +178,6 @@ for t in range(iterations):
             print(t)
         
         agents.reset_agents()
-
-    else:
-        x = r.get_poses()
 
     x_si = uni_to_si_states(x)
 
