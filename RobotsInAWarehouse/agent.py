@@ -100,8 +100,8 @@ class Warehouse_Agents:
         Evolution evolves agents proportionally to their score with a small chance of a mutation
         '''
         self.stats.update(self.agents)
-        print(self.stats)
-        print()
+        # print(self.stats)
+        # print()
 
         #Gets the total scores and the cummulative scores
         totalScore = 0
