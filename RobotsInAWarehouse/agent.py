@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 class Warehouse_Agent:
     def __init__(self, tag, number, N=False, L=False):
         self.tag = tag #The agent's tag number
-        self.number = number #Does not change, agent's ID
+        self.number = number #Does not change, agent's home zone
         self.N = N #Agent will accept request for help if its own bay doesn't need unloaded
         self.L = L #Agent will accept request for help if its own bay needs unloaded
         self.run = False #If the agent has already run in an iteration or not
@@ -58,6 +58,7 @@ class Warehouse_Agents:
 
         if helper == requester: #TODO: figure out why this occasionally happens
             print("Warning: helper == requester")
+
 
         if not helper.needHelp: #Helper's goal zone is fully unloaded
             if helper.N: #Accepts the request

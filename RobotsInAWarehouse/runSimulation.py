@@ -13,15 +13,15 @@ import random
 
 N = 20 #Number of agents
 G = 4 #Number of goals
-p = .01 #How likely a zone will be reloaded every update iteration
-s = 1000 #How much a zone will be reloaded by every time one gets reloaded
+p = .05 #How likely a zone will be reloaded every update iteration
+s = 400 #How much a zone will be reloaded by every time one gets reloaded
 
-expType = 'expResults/20tagged_s1000p01' #set to '' if don't want to save results
-evolve = True
+expType = 'expResults/20ntrue_s400p05' #set to '' if don't want to save results
+evolve = False
 evolveFrequency = 5 #Evolves once per this many updates
 updateFrequency = 200 #How many iterations per update
 iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
-agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
+agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=True, L=False)
 
 thetas = []
 for i in range(G):
@@ -50,7 +50,7 @@ si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 show_figure = False
 
 initial_conditions = generate_initial_conditions(N)
-r = robotarium.Robotarium(number_of_robots=N, show_figure=show_figure, initial_conditions=initial_conditions, sim_in_real_time=False)
+r = robotarium.Robotarium(number_of_robots=N, show_figure=show_figure, initial_conditions=initial_conditions, sim_in_real_time=True)
 
 # define x initially
 x = r.get_poses()
