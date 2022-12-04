@@ -20,16 +20,16 @@ import random
 N = 20 #Number of agents
 G = 4 #Number of goals
 
-p = .01 #How likely a zone will be reloaded every update iteration
-s = 1000 #How much a zone will be reloaded by every time one gets reloaded
+p = .25 #How likely a zone will be reloaded every update iteration
+s = 100 #How much a zone will be reloaded by every time one gets reloaded
 
-expType = 'expResults/20r_ntrue_s1000p01' #set to '' if don't want to save results
-evolve = False
+expType = 'expResults/20r_notag_s100p25' #set to '' if don't want to save results
+evolve = True
 helpRadius = 1.2
 evolveFrequency = 5 #Evolves once per this many updates
 updateFrequency = 75 #How many iterations per update
 iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
-agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=True, L=False)
+agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=False, L=False)
 
 thetas = []
 for i in range(G):
