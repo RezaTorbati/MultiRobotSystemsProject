@@ -100,7 +100,7 @@ class Warehouse_Agents:
         return agent
 
 
-    def evolve(self, mutationNChance = .2, mutationLChance = .2, mutationTChance = .05):
+    def evolve(self, mutationNChance = .02, mutationLChance = .02, mutationTChance = .05):
         '''
         Updates the stats of the agents and then evolves them
         Evolution evolves agents proportionally to their score with a small chance of a mutation
@@ -220,9 +220,6 @@ class Agent_Stats:
         plt.xlabel("Evolutions")
         print('MANUALLY SAVE THIS, SAVEFIG ISN"T WORKING')
         plt.show()
-        if name != '':
-            plt.savefig(name)
-        sleep(.01)
         
 
     def __str__(self):
