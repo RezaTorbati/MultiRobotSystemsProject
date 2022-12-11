@@ -24,7 +24,7 @@ expType = 'expResults/20r_notag_s400p05' #set to '' if don't want to save result
 evolve = True
 helpRadius = 1.2 #set to something large to ignore the radius parameter
 evolveFrequency = 5 #Evolves once per this many updates
-updateFrequency = 75 #How many iterations per update
+updateFrequency = 100 #How many iterations per update
 iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
 agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
 
