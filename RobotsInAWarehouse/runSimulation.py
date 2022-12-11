@@ -11,25 +11,22 @@ import random
 
 # Instantiate Robotarium object
 
-#TODO: Run simulations where
-#evolve is True and useTags is True (tagged), evolve is True and useTags is false (notag) - TXFF for both
-#evolve is False and N is True and L is False (ntrue)
-#evolve is False and N and L are both False (selfish FTFF)
-#Repeat for p = .25 and s=100, p=.05 s=400, p=.01 s=1000
+#Run simulations where
+#p = .25 and s=100, p=.05 s=400, p=.01 s=1000
 
 N = 20 #Number of agents
 G = 4 #Number of goals
 
-p = .25 #How likely a zone will be reloaded every update iteration
-s = 100 #How much a zone will be reloaded by every time one gets reloaded
+p = .05 #How likely a zone will be reloaded every update iteration
+s = 400 #How much a zone will be reloaded by every time one gets reloaded
 
-expType = 'expResults/20r_notag_s100p25' #set to '' if don't want to save results
+expType = 'expResults/20r_notag_s400p05' #set to '' if don't want to save results
 evolve = True
-helpRadius = 1.2
+helpRadius = 1.2 #set to something large to ignore the radius parameter
 evolveFrequency = 5 #Evolves once per this many updates
 updateFrequency = 75 #How many iterations per update
 iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
-agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=False, L=False)
+agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
 
 thetas = []
 for i in range(G):
@@ -44,6 +41,22 @@ for i in thetas:
     goal_point_x.append(1 * 0.8 * np.cos(i-(np.pi /G)))
     goal_point_y.append(1 * 0.8 * np.sin(i-(np.pi /G)))
 goal_points = np.array([goal_point_x, goal_point_y, goal_point_z])
+print(goal_points)
+print()
+goal_text_x = []
+goal_text_y = []
+for i, g in enumerate(goal_points.T):
+    print(g)
+    if i % 3 == 0:
+        goal_text_x.append(g[0] + .3)
+    else:
+        goal_text_x.append(g[0] - .3)
+
+    if int(i/2) == 0:
+        goal_text_y.append(g[1] + .3)
+    else:
+        goal_text_y.append(g[1] - .3)
+goal_texts = np.array([goal_text_x, goal_text_y, goal_point_z])
 
 # Create single integrator position controller
 single_integrator_position_controller = create_si_position_controller()
@@ -55,7 +68,7 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-show_figure = False
+show_figure = True
 
 initial_conditions = generate_initial_conditions(N)
 r = robotarium.Robotarium(number_of_robots=N, show_figure=show_figure, initial_conditions=initial_conditions, sim_in_real_time=True)
@@ -93,12 +106,14 @@ if show_figure:
     goal_caption = ['{0}'.format(ii) for ii in scores]
 
     #Plot text for caption
-    goal_points_text = [r.axes.text(goal_points[0,ii], goal_points[1,ii]-robot_marker_size_m-.05, goal_caption[ii], fontsize=font_size, color='k',fontweight='bold',horizontalalignment='center',verticalalignment='center',zorder=-2)
+    goal_points_text = [r.axes.text(goal_texts[0,ii], goal_texts[1,ii]-.05, goal_caption[ii], fontsize=font_size, color='k',fontweight='bold',horizontalalignment='center',verticalalignment='center',zorder=-2)
         for ii in range(goal_points.shape[1])] 
-    loads_text = [r.axes.text(goal_points[0,ii], goal_points[1,ii]-robot_marker_size_m+.05, loads_caption[ii], fontsize=font_size, color='k',fontweight='bold',horizontalalignment='center',verticalalignment='center',zorder=-2)
+    loads_text = [r.axes.text(goal_texts[0,ii], goal_texts[1,ii]+.05, loads_caption[ii], fontsize=font_size, color='k',fontweight='bold',horizontalalignment='center',verticalalignment='center',zorder=-2)
         for ii in range(goal_points.shape[1])]    
 
     robot_markers = [r.axes.scatter(x[0,ii], x[1,ii], s=marker_size_robot, marker='o', facecolors='none',edgecolors=CM(ii%G),linewidth=line_width) 
+        for ii in range(N)]
+    robot_tags = [r.axes.text(x[0,ii], x[1,ii], agents.agents[ii].tag, fontsize=font_size, color='k',fontweight='bold',horizontalalignment='center',verticalalignment='center',zorder=1) 
         for ii in range(N)]
 
 r.step()
@@ -185,6 +200,8 @@ for t in range(iterations):
     if show_figure:
         for i in range(x.shape[1]):
             robot_markers[i].set_offsets(x[:2,i].T)
+            robot_tags[i].set_text(agents.agents[i].tag)
+            robot_tags[i].set_position(x[:2,i].T)
             # This updates the marker sizes if the figure window size is changed. 
             # This should be removed when submitting to the Robotarium.
             robot_markers[i].set_sizes([determine_marker_size(r, robot_marker_size_m)])
