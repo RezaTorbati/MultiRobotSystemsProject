@@ -41,12 +41,10 @@ for i in thetas:
     goal_point_x.append(1 * 0.8 * np.cos(i-(np.pi /G)))
     goal_point_y.append(1 * 0.8 * np.sin(i-(np.pi /G)))
 goal_points = np.array([goal_point_x, goal_point_y, goal_point_z])
-print(goal_points)
-print()
+
 goal_text_x = []
 goal_text_y = []
 for i, g in enumerate(goal_points.T):
-    print(g)
     if i % 3 == 0:
         goal_text_x.append(g[0] + .3)
     else:
@@ -168,7 +166,6 @@ for t in range(iterations):
                         current_theta += 2*np.pi
                     if current_theta < thetas[k]:
                         if loads[k] > 0:
-                            agents.agents[k].score += 1
                             scores[k] += 1
                             loads[k] -= 1
                             idle = False
@@ -178,7 +175,9 @@ for t in range(iterations):
             agents.agents[j].xPos = x[0][j]
             agents.agents[j].yPos = x[1][j]
             agents.agents[j].idlePercent = idle_count[j] / update_step
-                
+        for j in range(N):
+            agents.agents[j].score = scores[j%G]
+        
         #if t != 0:
         #    print('idle percent: ', idle_count / update_step)
         #    print('Total idle percent: ', sum(idle_count)/(update_step*N))

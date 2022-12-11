@@ -114,24 +114,31 @@ class Warehouse_Agents:
         cumSum = []
         for a in self.agents:
             totalScore+=a.score
+            #print(a.number, ', ', a.score)
             cumSum.append(totalScore)
 
         #Evolves the agents in proportion to their score
         startingAgents = copy.deepcopy(self.agents)
         for a in range(self.num_agents):
-            setAgent = False
-            r = random.uniform(0,totalScore)
-            for i in range(len(cumSum)-1):
-                if r >= cumSum[i] and r < cumSum[i+1]:
-                    self.agents[a].N = startingAgents[i].N
-                    self.agents[a].L = startingAgents[i].L
-                    self.agents[a].tag = startingAgents[i].tag
-                    setAgent = True
-                    break
-            if not setAgent: #Wants to evolve the last agent
-                self.agents[a].N = startingAgents[len(startingAgents)-1].N
-                self.agents[a].L = startingAgents[len(startingAgents)-1].L
-                self.agents[a].tag = startingAgents[len(startingAgents)-1].tag
+            if totalScore == 0:
+                r = random.randint(0,self.num_agents-1)
+                self.agents[a].N = startingAgents[r].N
+                self.agents[a].L = startingAgents[r].L
+                self.agents[a].tag = startingAgents[r].tag
+            else:
+                setAgent = False
+                r = random.uniform(0,totalScore)
+                for i in range(len(cumSum)-1):
+                    if r >= cumSum[i] and r < cumSum[i+1]:
+                        self.agents[a].N = startingAgents[i].N
+                        self.agents[a].L = startingAgents[i].L
+                        self.agents[a].tag = startingAgents[i].tag
+                        setAgent = True
+                        break
+                if not setAgent: #Wants to evolve the last agent
+                    self.agents[a].N = startingAgents[len(startingAgents)-1].N
+                    self.agents[a].L = startingAgents[len(startingAgents)-1].L
+                    self.agents[a].tag = startingAgents[len(startingAgents)-1].tag
             
 
             #mutationN changes agent's N bit
