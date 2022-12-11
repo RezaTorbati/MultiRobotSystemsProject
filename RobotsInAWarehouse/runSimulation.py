@@ -17,10 +17,10 @@ import random
 N = 20 #Number of agents
 G = 4 #Number of goals
 
-p = .05 #How likely a zone will be reloaded every update iteration
-s = 400 #How much a zone will be reloaded by every time one gets reloaded
+p = .25 #How likely a zone will be reloaded every update iteration
+s = 100 #How much a zone will be reloaded by every time one gets reloaded
 
-expType = 'expResults/20r_notag_s400p05' #set to '' if don't want to save results
+expType = 'expResults/HelpLocal/tagged_s100p25' #set to '' if don't want to save results
 evolve = True
 helpRadius = 1.2 #set to something large to ignore the radius parameter
 evolveFrequency = 5 #Evolves once per this many updates
