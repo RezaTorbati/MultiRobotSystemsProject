@@ -17,16 +17,17 @@ import random
 N = 20 #Number of agents
 G = 4 #Number of goals
 
-p = .25 #How likely a zone will be reloaded every update iteration
-s = 100 #How much a zone will be reloaded by every time one gets reloaded
+p = .01 #How likely a zone will be reloaded every update iteration
+s = 1000 #How much a zone will be reloaded by every time one gets reloaded
 
-expType = 'expResults/HelpLocal/tagged_s100p25' #set to '' if don't want to save results
-evolve = True
+expType = 'expResults/Local/local_ntrue_s1000p01' #set to '' if don't want to save results
+evolve = False
 helpRadius = 1.2 #set to something large to ignore the radius parameter
+evolveRadius = helpRadius #set to -1 to ignore
 evolveFrequency = 5 #Evolves once per this many updates
 updateFrequency = 100 #How many iterations per update
 iterations = 500 * updateFrequency * evolveFrequency + 1 #Number of steps to run the simulation (each takes ~.033 seconds)
-agents = Warehouse_Agents(num_agents=N, useTags = True, num_tags = N*10, N=False, L=False)
+agents = Warehouse_Agents(num_agents=N, useTags = False, num_tags = N*10, N=True, L=False)
 
 thetas = []
 for i in range(G):
@@ -66,7 +67,7 @@ _, uni_to_si_states = create_si_to_uni_mapping()
 # Create mapping from single integrator velocity commands to unicycle velocity commands
 si_to_uni_dyn = create_si_to_uni_dynamics_with_backwards_motion()
 
-show_figure = True
+show_figure = False
 
 initial_conditions = generate_initial_conditions(N)
 r = robotarium.Robotarium(number_of_robots=N, show_figure=show_figure, initial_conditions=initial_conditions, sim_in_real_time=True)
@@ -184,12 +185,12 @@ for t in range(iterations):
 
         if t % (updateFrequency*evolveFrequency) == 0 and evolve:
             print(t)
-            agents.evolve()
+            agents.evolve(radius=evolveRadius)
         elif t % (updateFrequency*evolveFrequency) == 0:
-            agents.stats.update(agents.agents)
-            # print(agents.stats)
-            # print()
             print(t)
+            agents.stats.update(agents.agents)
+            print(agents.stats)
+            print()
         
         agents.reset_agents()
 

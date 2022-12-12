@@ -80,6 +80,9 @@ class Warehouse_Agents:
                 #print('reject2', requester.number, helper.number)
                 helper.goalZone = helper.number
 
+    def getDistance(self, a1, a2):
+        return ((a1.xPos-a2.xPos)**2 + (a1.yPos - a2.yPos)**2)**.5
+
     def get_helper(self, requester, radius):
         '''
         Selects an agent that hasn't run yet, ideally with the same tag, and asks for help
@@ -88,7 +91,7 @@ class Warehouse_Agents:
         shuffled_list = self.agents.copy()
         random.shuffle(shuffled_list)
         for a in shuffled_list:
-            dist = ((a.xPos-requester.xPos)**2 + (a.yPos - requester.yPos)**2)**.5
+            dist = self.getDistance(a, requester)
             if not a.run and a.number != requester.number and dist <= radius:
                 if a.tag == requester.tag:
                     a.run = True
@@ -100,7 +103,7 @@ class Warehouse_Agents:
         return agent
 
 
-    def evolve(self, mutationNChance = .02, mutationLChance = .02, mutationTChance = .05):
+    def evolve(self, mutationNChance = .02, mutationLChance = .02, mutationTChance = .05, radius = -1):
         '''
         Updates the stats of the agents and then evolves them
         Evolution evolves agents proportionally to their score with a small chance of a mutation
@@ -109,37 +112,67 @@ class Warehouse_Agents:
         print(self.stats)
         print()
 
-        #Gets the total scores and the cummulative scores
-        totalScore = 0
-        cumSum = []
-        for a in self.agents:
-            totalScore+=a.score
-            #print(a.number, ', ', a.score)
-            cumSum.append(totalScore)
+        if radius == -1:
+            #Gets the total scores and the cummulative scores
+            totalScore = 0
+            cumSum = []
+            for a in self.agents:
+                totalScore+=a.score
+                #print(a.number, ', ', a.score)
+                cumSum.append(totalScore)
 
         #Evolves the agents in proportion to their score
         startingAgents = copy.deepcopy(self.agents)
         for a in range(self.num_agents):
-            if totalScore == 0:
-                r = random.randint(0,self.num_agents-1)
-                self.agents[a].N = startingAgents[r].N
-                self.agents[a].L = startingAgents[r].L
-                self.agents[a].tag = startingAgents[r].tag
+            if radius == -1:
+                if totalScore == 0:
+                    r = random.randint(0,self.num_agents-1)
+                    self.agents[a].N = startingAgents[r].N
+                    self.agents[a].L = startingAgents[r].L
+                    self.agents[a].tag = startingAgents[r].tag
+                else:
+                    setAgent = False
+                    r = random.uniform(0,totalScore)
+                    for i in range(len(cumSum)-1):
+                        if r >= cumSum[i] and r < cumSum[i+1]:
+                            self.agents[a].N = startingAgents[i].N
+                            self.agents[a].L = startingAgents[i].L
+                            self.agents[a].tag = startingAgents[i].tag
+                            setAgent = True
+                            break
+                    if not setAgent: #Wants to evolve the last agent
+                        self.agents[a].N = startingAgents[len(startingAgents)-1].N
+                        self.agents[a].L = startingAgents[len(startingAgents)-1].L
+                        self.agents[a].tag = startingAgents[len(startingAgents)-1].tag
             else:
-                setAgent = False
-                r = random.uniform(0,totalScore)
-                for i in range(len(cumSum)-1):
-                    if r >= cumSum[i] and r < cumSum[i+1]:
-                        self.agents[a].N = startingAgents[i].N
-                        self.agents[a].L = startingAgents[i].L
-                        self.agents[a].tag = startingAgents[i].tag
-                        setAgent = True
-                        break
-                if not setAgent: #Wants to evolve the last agent
-                    self.agents[a].N = startingAgents[len(startingAgents)-1].N
-                    self.agents[a].L = startingAgents[len(startingAgents)-1].L
-                    self.agents[a].tag = startingAgents[len(startingAgents)-1].tag
-            
+                cumSum = []
+                validAgents = []
+                totalScore = 0
+                for aa in startingAgents:
+                    if self.getDistance(self.agents[a], aa) <= radius:
+                        totalScore += aa.score
+                        cumSum.append(totalScore)
+                        validAgents.append(aa)
+                
+                if totalScore == 0:
+                    r = random.randint(0, len(validAgents)-1)
+                    self.agents[a].N = validAgents[r].N
+                    self.agents[a].L = validAgents[r].L
+                    self.agents[a].tag = validAgents[r].tag
+                else:
+                    setAgent = False
+                    r = random.uniform(0,totalScore)
+                    for i in range(len(cumSum)-1):
+                        if r >= cumSum[i] and r < cumSum[i+1]:
+                            self.agents[a].N = validAgents[i].N
+                            self.agents[a].L = validAgents[i].L
+                            self.agents[a].tag = validAgents[i].tag
+                            setAgent = True
+                            break
+                    if not setAgent: #Wants to evolve the last agent
+                        self.agents[a].N = validAgents[len(validAgents)-1].N
+                        self.agents[a].L = validAgents[len(validAgents)-1].L
+                        self.agents[a].tag = validAgents[len(validAgents)-1].tag
 
             #mutationN changes agent's N bit
             mutationN = random.random()
