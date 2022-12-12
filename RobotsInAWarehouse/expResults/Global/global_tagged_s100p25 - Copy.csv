@@ -1,0 +1,21 @@
+Agent 0:        Tag: 156, Agent Goal Zone: 2, N: True, L: True
+Agent 1:        Tag: 41, Agent Goal Zone: 9, N: True, L: True
+Agent 2:        Tag: 41, Agent Goal Zone: 11, N: False, L: False
+Agent 3:        Tag: 41, Agent Goal Zone: 10, N: False, L: True
+Agent 4:        Tag: 41, Agent Goal Zone: 5, N: False, L: True
+Agent 5:        Tag: 41, Agent Goal Zone: 16, N: True, L: True
+Agent 6:        Tag: 177, Agent Goal Zone: 19, N: True, L: False
+Agent 7:        Tag: 177, Agent Goal Zone: 14, N: True, L: False
+Agent 8:        Tag: 41, Agent Goal Zone: 0, N: True, L: False
+Agent 9:        Tag: 119, Agent Goal Zone: 3, N: True, L: True
+Agent 10:       Tag: 41, Agent Goal Zone: 10, N: True, L: True
+Agent 11:       Tag: 41, Agent Goal Zone: 8, N: True, L: True
+Agent 12:       Tag: 41, Agent Goal Zone: 12, N: True, L: False
+Agent 13:       Tag: 41, Agent Goal Zone: 15, N: True, L: True
+Agent 14:       Tag: 41, Agent Goal Zone: 4, N: False, L: True
+Agent 15:       Tag: 177, Agent Goal Zone: 7, N: True, L: False
+Agent 16:       Tag: 41, Agent Goal Zone: 13, N: True, L: True
+Agent 17:       Tag: 41, Agent Goal Zone: 17, N: True, L: True
+Agent 18:       Tag: 41, Agent Goal Zone: 18, N: True, L: True
+Agent 19:       Tag: 41, Agent Goal Zone: 19, N: True, L: True
+[10691. 10891. 10714. 11170.]    43466.0

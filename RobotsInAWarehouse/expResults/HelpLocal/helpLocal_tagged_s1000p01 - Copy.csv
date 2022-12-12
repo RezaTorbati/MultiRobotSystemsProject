@@ -1,0 +1,21 @@
+Agent 0:        Tag: 61, Agent Goal Zone: 3, N: False, L: False
+Agent 1:        Tag: 52, Agent Goal Zone: 1, N: True, L: True
+Agent 2:        Tag: 167, Agent Goal Zone: 17, N: True, L: True
+Agent 3:        Tag: 125, Agent Goal Zone: 13, N: True, L: False
+Agent 4:        Tag: 120, Agent Goal Zone: 5, N: True, L: True
+Agent 5:        Tag: 61, Agent Goal Zone: 5, N: False, L: False
+Agent 6:        Tag: 125, Agent Goal Zone: 6, N: True, L: False
+Agent 7:        Tag: 167, Agent Goal Zone: 7, N: True, L: True
+Agent 8:        Tag: 61, Agent Goal Zone: 8, N: False, L: False
+Agent 9:        Tag: 112, Agent Goal Zone: 9, N: False, L: False
+Agent 10:       Tag: 61, Agent Goal Zone: 10, N: False, L: False
+Agent 11:       Tag: 167, Agent Goal Zone: 11, N: True, L: True
+Agent 12:       Tag: 61, Agent Goal Zone: 12, N: False, L: False
+Agent 13:       Tag: 61, Agent Goal Zone: 13, N: False, L: False
+Agent 14:       Tag: 167, Agent Goal Zone: 14, N: True, L: True
+Agent 15:       Tag: 120, Agent Goal Zone: 15, N: True, L: True
+Agent 16:       Tag: 120, Agent Goal Zone: 16, N: True, L: True
+Agent 17:       Tag: 143, Agent Goal Zone: 17, N: True, L: False
+Agent 18:       Tag: 167, Agent Goal Zone: 19, N: True, L: True
+Agent 19:       Tag: 120, Agent Goal Zone: 19, N: True, L: True
+[9000. 9664. 9000. 8391.]        36055.0

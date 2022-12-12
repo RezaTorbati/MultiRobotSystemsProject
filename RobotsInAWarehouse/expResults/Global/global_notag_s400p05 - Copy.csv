@@ -1,0 +1,21 @@
+Agent 0:        Tag: -1, Agent Goal Zone: 10, N: False, L: True
+Agent 1:        Tag: -1, Agent Goal Zone: 17, N: False, L: True
+Agent 2:        Tag: -1, Agent Goal Zone: 16, N: True, L: True
+Agent 3:        Tag: -1, Agent Goal Zone: 3, N: False, L: True
+Agent 4:        Tag: -1, Agent Goal Zone: 1, N: True, L: True
+Agent 5:        Tag: -1, Agent Goal Zone: 4, N: False, L: True
+Agent 6:        Tag: -1, Agent Goal Zone: 6, N: True, L: True
+Agent 7:        Tag: -1, Agent Goal Zone: 7, N: False, L: True
+Agent 8:        Tag: -1, Agent Goal Zone: 6, N: True, L: True
+Agent 9:        Tag: -1, Agent Goal Zone: 8, N: False, L: True
+Agent 10:       Tag: -1, Agent Goal Zone: 10, N: False, L: True
+Agent 11:       Tag: -1, Agent Goal Zone: 11, N: False, L: True
+Agent 12:       Tag: -1, Agent Goal Zone: 9, N: False, L: False
+Agent 13:       Tag: -1, Agent Goal Zone: 13, N: False, L: False
+Agent 14:       Tag: -1, Agent Goal Zone: 12, N: False, L: True
+Agent 15:       Tag: -1, Agent Goal Zone: 15, N: True, L: True
+Agent 16:       Tag: -1, Agent Goal Zone: 2, N: True, L: True
+Agent 17:       Tag: -1, Agent Goal Zone: 17, N: False, L: True
+Agent 18:       Tag: -1, Agent Goal Zone: 0, N: False, L: True
+Agent 19:       Tag: -1, Agent Goal Zone: 19, N: False, L: True
+[10268. 10800. 10430. 10400.]    41898.0
