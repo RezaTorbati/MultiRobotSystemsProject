@@ -20,8 +20,8 @@ G = 4 #Number of goals
 p = .25 #How likely a zone will be reloaded every update iteration
 s = 100 #How much a zone will be reloaded by every time one gets reloaded
 
-expType = 'expResults/Local/local_notags_s100p25' #set to '' if don't want to save results
-evolve = True
+expType = 'expResults/Local/local_selfish_s100p25' #set to '' if don't want to save results
+evolve = False
 helpRadius = 1.2 #set to something large to ignore the radius parameter
 evolveRadius = helpRadius #set to -1 to ignore
 evolveFrequency = 5 #Evolves once per this many updates
