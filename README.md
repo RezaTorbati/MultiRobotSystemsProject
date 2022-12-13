@@ -1,5 +1,5 @@
 # Mutli-Robot Systems Semester Project
-Semester Project for CS 7631, Multi-Robot Systems at Georgia Tech
+Semester Project for CS 7631, Multi-Robot Systems at Georgia Tech where we implimented difference scenarios from Hales et al. in the Robotarium to find if tags will work to evolve social rationality in multi-robot systems
 
 # Citations
 >Kalenka, Susanne, and Nicholas R. Jennings. "Socially responsible decision making by autonomous agents." Cognition, Agency and Rationality. Springer, Dordrecht, 1999. 135-149.
